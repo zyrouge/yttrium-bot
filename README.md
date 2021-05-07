@@ -1,4 +1,4 @@
-# Discord Bot Boilerplate
+# Yttrium Bot
 
 -   Language: [Typescript](https://www.typescriptlang.org/)
 -   Framework: [Discord.js](http://npmjs.com/package/discord.js)
@@ -8,7 +8,7 @@
 ### Clone
 
 ```bash
-git clone https://github.com/zyrouge/discord-bot-boilerplate.git
+git clone https://github.com/zyrouge/yttrium-bot.git
 ```
 
 ## Environmental Variables
