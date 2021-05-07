@@ -1,4 +1,4 @@
-# Yttriym Bot
+# Yttrium Bot
 
 -   Language: [Typescript](https://www.typescriptlang.org/)
 -   Framework: [Discord.js](http://npmjs.com/package/discord.js)
