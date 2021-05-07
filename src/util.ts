@@ -14,9 +14,10 @@ export const Emojis = {
     WAVE: "👋",
     REPEAT: "🔄",
     SINGLE_REPEAT: "🔂",
-    TICK: "✔️",
+    TICK: "✅",
     CROSS: "❌",
     INFO: "ℹ",
+    SOUND: "🔊",
 };
 
 export const Colors = {

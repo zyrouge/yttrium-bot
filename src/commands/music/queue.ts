@@ -51,21 +51,24 @@ const fn: AppFile = (app) => {
                     `${Emojis.SAD} | No songs were found on **page ${page}**!`
                 );
 
-            embed.setDescription(
-                songs.map(
-                    (x, i) =>
-                        `${i + 1 + start}. **${x.title}** [${x.duration}] (<@${
-                            x.requestedBy.id
-                        }>)`
-                )
-            );
-
             const np = app.music.nowPlaying(msg);
             if (np)
-                embed.addField(
-                    `${Emojis.PLAY} | Now playing`,
-                    `**${np.title}** [${np.duration}] (<@${np.requestedBy.id}>)`
-                );
+                if (np)
+                    embed.addField(
+                        `${Emojis.SOUND} Now playing`,
+                        `**${np.title}** [${np.duration}] (<@${np.requestedBy.id}>)`
+                    );
+
+            embed.setDescription(
+                songs
+                    .map(
+                        (x, i) =>
+                            `${i + 1 + start}. **${x.title}** [${
+                                x.duration
+                            }] (<@${x.requestedBy.id}>)`
+                    )
+                    .join("\n") + (np ? "\n\n** **" : "")
+            );
 
             embed.setFooter(
                 `Page: ${page + 1}/${Math.ceil(

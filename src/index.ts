@@ -24,10 +24,9 @@ const start = async () => {
                     },
                 },
                 quality: "highestaudio",
-                filter: (format) =>
-                    format.hasAudio &&
-                    format.hasVideo &&
-                    +format.contentLength > 0,
+                filter: (format) => {
+                    return format.hasAudio && !!format.audioBitrate;
+                },
             },
         },
     });

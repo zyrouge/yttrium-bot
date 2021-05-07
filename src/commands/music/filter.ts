@@ -6,6 +6,9 @@ import { Colors, Emojis, Functions } from "@/util";
 
 const allFilters = AudioFilters.names;
 
+// Changing filter values
+AudioFilters.bassboost = "bass=g=15";
+
 const fn: AppFile = (app) => {
     const command = new Command(
         {
@@ -39,11 +42,12 @@ const fn: AppFile = (app) => {
             if (args.length) {
                 const newFilters: Record<string, boolean> = {};
 
-                for (let filter of args) {
-                    filter = filter.toLowerCase();
-
-                    if (!allFilters.includes(filter)) {
-                        invalidFilters.push(filter);
+                for (let arg of args) {
+                    const filter = allFilters.find(
+                        (x) => x.toLowerCase() === arg.toLowerCase()
+                    );
+                    if (!filter) {
+                        invalidFilters.push(arg);
                         continue;
                     }
 
@@ -51,7 +55,10 @@ const fn: AppFile = (app) => {
                     newFilters[filter] = !queue.filters[filter];
                 }
 
-                await app.music.setFilters(msg, newFilters);
+                if (Object.keys(newFilters).length) {
+                    msg.react(Emojis.TIMER).catch(() => {});
+                    await app.music.setFilters(msg, newFilters);
+                }
             }
 
             const embed = new MessageEmbed();
@@ -71,7 +78,7 @@ const fn: AppFile = (app) => {
 
             if (invalidFilters.length)
                 embed.addField(
-                    `${Emojis.DANGER} | Invalid Filters`,
+                    `${Emojis.DANGER} Invalid Filters`,
                     `Could not add these filters: ${invalidFilters
                         .map((x) => `\`${x}\``)
                         .join(", ")}`
@@ -80,7 +87,7 @@ const fn: AppFile = (app) => {
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);
             embed.addField(
-                `${Emojis.INFO} | Tip`,
+                `${Emojis.INFO} Tip`,
                 `Use \`${prefix}${command.name} [filter1, filter2, ...]\` to add or remove filters!`
             );
 
