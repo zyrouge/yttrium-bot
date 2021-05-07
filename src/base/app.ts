@@ -1,6 +1,7 @@
 import pino from "pino";
 import path from "path";
 import { promises as fs } from "fs";
+import { Player, PlayerOptions } from "discord-player";
 import { Bot, BotOptions } from "@/base/bot";
 import { CommandManager } from "@/base/plugins/commands";
 
@@ -8,6 +9,7 @@ export type AppFile = (app: App) => any;
 
 export interface AppOptions {
     botOptions: BotOptions;
+    musicOptions: PlayerOptions;
 }
 
 export class App {
@@ -15,12 +17,16 @@ export class App {
     logger: pino.Logger;
     bot: Bot;
     commands: CommandManager;
+    music: Player;
+    cacheData: Map<string, any>;
 
     constructor(options: AppOptions) {
         this.options = options;
         this.logger = pino();
         this.bot = new Bot(options.botOptions);
         this.commands = new CommandManager();
+        this.music = new Player(this.bot, options.musicOptions);
+        this.cacheData = new Map();
     }
 
     async dir(dir: string) {

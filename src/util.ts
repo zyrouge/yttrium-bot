@@ -14,10 +14,13 @@ export const Emojis = {
     WAVE: "👋",
     REPEAT: "🔄",
     SINGLE_REPEAT: "🔂",
+    TICK: "✔️",
+    CROSS: "❌",
 };
 
 export const Colors = {
     YELLOW: 16767232,
+    BLUE: 5940704,
 };
 
 export const Functions = {

@@ -1,12 +1,16 @@
-import { Client, ClientOptions } from "eris";
+import { Client, ClientOptions } from "discord.js";
 
 export interface BotOptions {
     token: string;
-    erisOptions?: ClientOptions;
+    clientOptions?: ClientOptions;
 }
 
 export class Bot extends Client {
+    connect: typeof Client.prototype.login;
+
     constructor(options: BotOptions) {
-        super(options.token, options.erisOptions);
+        super(options.clientOptions);
+
+        this.connect = super.login.bind(this, options.token);
     }
 }

@@ -1,7 +1,7 @@
 # Discord Bot Boilerplate
 
 -   Language: [Typescript](https://www.typescriptlang.org/)
--   Framework: [Eris](http://npmjs.com/package/eris)
+-   Framework: [Discord.js](http://npmjs.com/package/discord.js)
 
 ## Installation
 

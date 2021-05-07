@@ -1,4 +1,4 @@
-import Eris from "eris";
+import Discord from "discord.js";
 
 export interface Command {
     name: string;
@@ -10,7 +10,7 @@ export interface Command {
 }
 
 export type CommandRun = (options: {
-    msg: Eris.Message<Eris.GuildTextableChannel>;
+    msg: Discord.Message;
     args: string[];
     prefix: string;
 }) => any;
@@ -45,9 +45,7 @@ export class CommandManager {
 
         command.aliases?.forEach((alias) => {
             if (this.aliases.has(alias))
-                throw new Error(
-                    `Command with alias '${command.name}' already exists`
-                );
+                throw new Error(`Command with alias '${alias}' already exists`);
             this.aliases.set(alias, command.name);
         });
     }

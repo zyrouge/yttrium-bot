@@ -1,4 +1,4 @@
-import { EmbedField } from "eris";
+import { EmbedField } from "discord.js";
 import path from "path";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
@@ -27,13 +27,13 @@ const fn: AppFile = (app) => {
             );
 
             if (!cmds.length)
-                return msg.channel.createMessage(
+                return msg.channel.send(
                     `${Emojis.SAD} | Page **${
                         page + 1
                     }** of the commands is empty!`
                 );
 
-            const fields: EmbedField[] = [];
+            const fields: Omit<EmbedField, "inline">[] = [];
             cmds.forEach((cmd, i) => {
                 fields.push({
                     name: `${i + startIndex + 1}) ${Functions.capitalize(
@@ -51,7 +51,7 @@ const fn: AppFile = (app) => {
                 });
             });
 
-            msg.channel.createMessage({
+            msg.channel.send({
                 embed: {
                     author: {
                         name: `${Emojis.MUSIC} | Commands`,

@@ -22,12 +22,12 @@ const fn: AppFile = (app) => {
         async ({ msg, args }) => {
             const term = args.join(" ");
             if (!term.length)
-                return msg.channel.createMessage(
+                return msg.channel.send(
                     `${Emojis.DANGER} | Provide some arguments to resolve songs!`
                 );
 
             try {
-                const nmsg = await msg.channel.createMessage(
+                const nmsg = await msg.channel.send(
                     `${Emojis.SEARCH} | Searching lyrics for \`${term}\`...`
                 );
 
@@ -63,11 +63,11 @@ const fn: AppFile = (app) => {
 
                 nmsg.delete().catch(() => {});
                 for (const page of pages) {
-                    msg.channel.createMessage(page);
+                    msg.channel.send(page);
                     await Functions.sleep(250);
                 }
             } catch (err) {
-                return msg.channel.createMessage(
+                return msg.channel.send(
                     `${Emojis.DANGER} | Something went wrong! (${
                         err?.message ? err.message : err.toString()
                     })`

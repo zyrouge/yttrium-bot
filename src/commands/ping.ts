@@ -12,12 +12,12 @@ const fn: AppFile = (app) => {
         },
         async ({ msg }) => {
             const start = Date.now();
-            const nmsg = await msg.channel.createMessage(
+            const nmsg = await msg.channel.send(
                 `${Emojis.TIMER} | Pinging...`
             );
             nmsg.edit(
                 `${Emojis.PING_PONG} | Pong! It took ${
-                    nmsg.createdAt - msg.createdAt
+                    nmsg.createdAt.valueOf() - msg.createdAt.valueOf()
                 }ms to respond and ${Date.now() - start}ms to process!`
             );
         }

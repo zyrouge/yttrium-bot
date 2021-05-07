@@ -1,9 +1,9 @@
 import { AppFile } from "@/base/app";
-import Eris from "eris";
+import Discord from "discord.js";
 
 const fn: AppFile = (app) => {
-    app.bot.on("messageCreate", (msg: Eris.Message<Eris.GuildTextableChannel>) => {
-        if (msg.author.bot || !("guild" in msg.channel)) return;
+    app.bot.on("message", (msg: Discord.Message) => {
+        if (msg.author.bot || !msg.guild) return;
         
         const prefix = process.env.PREFIX;
         if (!prefix || !msg.content.startsWith(prefix)) return;

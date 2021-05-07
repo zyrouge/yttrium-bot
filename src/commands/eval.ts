@@ -29,7 +29,7 @@ const fn: AppFile = (app) => {
                 if (typeof evaled !== "string") evaled = util.inspect(evaled);
                 evaled = Functions.clean(evaled);
 
-                msg.channel.createMessage(
+                msg.channel.send(
                     `${Emojis.SUCCESS} | **Success** ${respTags
                         .map((x) => `(${x})`)
                         .join(" ")}\n\`\`\`xl\n${Functions.shorten(
@@ -38,7 +38,7 @@ const fn: AppFile = (app) => {
                     )}\`\`\``
                 );
             } catch (err) {
-                msg.channel.createMessage(
+                msg.channel.send(
                     `${
                         Emojis.DANGER
                     } | **Error**\n\`\`\`xl\n${Functions.shorten(

@@ -12,6 +12,19 @@ const start = async () => {
     const app = new App({
         botOptions: {
             token: process.env.TOKEN,
+            clientOptions: {
+                disableMentions: "everyone",
+            },
+        },
+        musicOptions: {
+            ytdlDownloadOptions: {
+                requestOptions: {
+                    headers: {
+                        cookie: process.env.YT_COOKIE,
+                    },
+                },
+                filter: "audioonly",
+            },
         },
     });
 
