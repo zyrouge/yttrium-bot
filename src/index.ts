@@ -23,7 +23,11 @@ const start = async () => {
                         cookie: process.env.YT_COOKIE,
                     },
                 },
-                filter: "audioonly",
+                quality: "highestaudio",
+                filter: (format) =>
+                    format.hasAudio &&
+                    format.hasVideo &&
+                    +format.contentLength > 0,
             },
         },
     });
