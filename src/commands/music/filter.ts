@@ -71,7 +71,7 @@ const fn: AppFile = (app) => {
 
             if (invalidFilters.length)
                 embed.addField(
-                    "Invalid Filters",
+                    `${Emojis.DANGER} | Invalid Filters`,
                     `Could not add these filters: ${invalidFilters
                         .map((x) => `\`${x}\``)
                         .join(", ")}`
@@ -80,7 +80,7 @@ const fn: AppFile = (app) => {
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);
             embed.addField(
-                "Tip",
+                `${Emojis.INFO} | Tip`,
                 `Use \`${prefix}${command.name} [filter1, filter2, ...]\` to add or remove filters!`
             );
 

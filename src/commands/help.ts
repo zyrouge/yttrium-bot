@@ -1,8 +1,8 @@
-import { EmbedField } from "discord.js";
+import { MessageEmbed } from "discord.js";
 import path from "path";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Colors, Emojis, Functions } from "@/util";
+import { Emojis, Functions } from "@/util";
 
 const pkjJson = require(path.join(__dirname, "..", "..", "package.json"));
 
@@ -33,13 +33,16 @@ const fn: AppFile = (app) => {
                     }** of the commands is empty!`
                 );
 
-            const fields: Omit<EmbedField, "inline">[] = [];
+            const embed = new MessageEmbed();
+
+            embed.setTitle(`${Emojis.MUSIC} | Commands`);
+            embed.setTimestamp();
+            embed.setColor("RANDOM");
+
             cmds.forEach((cmd, i) => {
-                fields.push({
-                    name: `${i + startIndex + 1}) ${Functions.capitalize(
-                        cmd.name
-                    )}`,
-                    value: [
+                embed.addField(
+                    `${i + startIndex + 1}) ${Functions.capitalize(cmd.name)}`,
+                    [
                         `**Invokers:** ${[cmd.name, ...(cmd.aliases || [])]
                             .map((x) => `\`${x}\``)
                             .join(", ")}`,
@@ -47,28 +50,21 @@ const fn: AppFile = (app) => {
                         `**Category:** ${Functions.capitalize(cmd.category)}`,
                     ]
                         .filter((x) => x)
-                        .join("\n"),
-                });
+                        .join("\n")
+                );
             });
 
-            msg.channel.send({
-                embed: {
-                    author: {
-                        name: `${Emojis.MUSIC} | Commands`,
-                    },
-                    color: Colors.YELLOW,
-                    fields,
-                    footer: {
-                        text: `Page ${page + 1} of ${Math.ceil(
-                            allCommands.length / itemsPerPage
-                        )} | Total commands: ${allCommands.length} | GitHub: ${
-                            (pkjJson?.repository?.url as string)?.match(
-                                /^git\+(.*).git/
-                            )?.[1] || "-"
-                        } | Author: ${pkjJson?.author || "-"}`,
-                    },
-                },
-            });
+            embed.setFooter(
+                `Page ${page + 1} of ${Math.ceil(
+                    allCommands.length / itemsPerPage
+                )} | Total commands: ${allCommands.length} | GitHub: ${
+                    (pkjJson?.repository?.url as string)?.match(
+                        /^git\+(.*).git/
+                    )?.[1] || "-"
+                } | Author: ${pkjJson?.author || "-"}`
+            );
+
+            msg.channel.send({ embed });
         }
     );
 

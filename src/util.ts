@@ -16,6 +16,7 @@ export const Emojis = {
     SINGLE_REPEAT: "🔂",
     TICK: "✔️",
     CROSS: "❌",
+    INFO: "ℹ",
 };
 
 export const Colors = {
