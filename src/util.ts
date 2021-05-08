@@ -18,11 +18,13 @@ export const Emojis = {
     CROSS: "❌",
     INFO: "ℹ",
     SOUND: "🔊",
+    PAGE: "📄",
 };
 
 export const Colors = {
     YELLOW: 16767232,
     BLUE: 5940704,
+    WHITE: 16777215,
 };
 
 export const Functions = {

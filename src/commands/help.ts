@@ -1,8 +1,8 @@
-import { MessageEmbed } from "discord.js";
 import path from "path";
+import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Emojis, Functions } from "@/util";
+import { Colors, Emojis, Functions } from "@/util";
 
 const pkjJson = require(path.join(__dirname, "..", "..", "package.json"));
 
@@ -35,9 +35,9 @@ const fn: AppFile = (app) => {
 
             const embed = new MessageEmbed();
 
-            embed.setTitle(`${Emojis.MUSIC} | Commands`);
+            embed.setTitle(`${Emojis.PAGE} | Commands`);
             embed.setTimestamp();
-            embed.setColor("RANDOM");
+            embed.setColor(Colors.WHITE);
 
             cmds.forEach((cmd, i) => {
                 embed.addField(
