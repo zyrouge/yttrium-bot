@@ -14,7 +14,7 @@ const getInfo = (query: string) => {
         title: `Stream - ${host}`,
         duration: 0,
         thumbnail:
-            "https://upload.wikimedia.org/wikipedia/commons/2/2a/ITunes_12.2_logo.png",
+            "https://images.pexels.com/photos/167092/pexels-photo-167092.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
         engine: url,
         views: 0,
         author: origin,
