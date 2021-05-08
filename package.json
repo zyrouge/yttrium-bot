@@ -6,6 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node . | pino-pretty",
+    "dev": "npm run build && node . | pino-pretty",
     "build": "node scripts/prebuild && tsc && node scripts/postbuild",
     "postinstall": "npm run build"
   },
@@ -30,6 +31,7 @@
     "discord-player": "^4.0.5",
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",
+    "ffmpeg-static": "^4.3.0",
     "genius-lyrics": "^4.2.7",
     "module-alias": "^2.2.2",
     "pino": "^6.11.3",
