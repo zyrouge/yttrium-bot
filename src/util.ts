@@ -58,5 +58,6 @@ export const Constants = {
     regex: {
         discordMention: (id: string = "\\d+", flags?: string) =>
             new RegExp(`<@!?${id}>`, flags),
+        url: /^(https?:\/\/)/,
     },
 };
