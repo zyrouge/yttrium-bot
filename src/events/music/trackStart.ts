@@ -18,7 +18,7 @@ const fn: AppFile = (app) => {
             .setTitle(`${Emojis.MUSIC} | Now playing`)
             .setDescription(
                 [
-                    `**Title**: ${track.title}`,
+                    `**Title**: [${track.title}](${track.url})`,
                     `**Requested by**: <@${track.requestedBy.id}>`,
                     `**Duration:** ${track.duration}`,
                 ].join("\n")

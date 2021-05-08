@@ -13,7 +13,9 @@ const fn: AppFile = (app) => {
                 `${Emojis.MUSIC} | Here are your search results for ${query}`
             );
             embed.setDescription(
-                tracks.map((t, i) => `${i + 1}. **${t.title}**`).join("\n")
+                tracks
+                    .map((t, i) => `${i + 1}. **[${t.title}]${t.url}**`)
+                    .join("\n")
             );
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);

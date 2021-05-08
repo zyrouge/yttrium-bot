@@ -56,14 +56,14 @@ const fn: AppFile = (app) => {
                 if (np)
                     embed.addField(
                         `${Emojis.SOUND} Now playing`,
-                        `**${np.title}** [${np.duration}] (<@${np.requestedBy.id}>)`
+                        `**[${np.title}](${np.url})** [${np.duration}] (<@${np.requestedBy.id}>)`
                     );
 
             embed.setDescription(
                 songs
                     .map(
                         (x, i) =>
-                            `${i + 1 + start}. **${x.title}** [${
+                            `${i + 1 + start}. **[${x.title}](${x.url})** [${
                                 x.duration
                             }] (<@${x.requestedBy.id}>)`
                     )

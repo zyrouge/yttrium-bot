@@ -37,7 +37,7 @@ const fn: AppFile = (app) => {
             embed.setTitle(`${Emojis.MUSIC} | Now Playing`);
             embed.setDescription(
                 [
-                    `**Title**: ${track.title}`,
+                    `**Title**: [${track.title}](${track.url})`,
                     `**Requested by**: <@${track.requestedBy.id}>`,
                 ].join("\n")
             );
