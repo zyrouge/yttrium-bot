@@ -36,5 +36,9 @@
   },
   "_moduleAliases": {
     "@": "dist"
+  },
+  "engines": {
+    "node": "14.x",
+    "npm": "*"
   }
 }
