@@ -1,13 +1,13 @@
 import util from "util";
 import { AppFile } from "@/base/app";
-import { Command } from "@/base/plugins/commands";
+import { createCommand } from "@/base/plugins/commands";
 import { Emojis, Functions } from "@/util";
 
 if (!process.env.OWNERS) throw new Error("Missing 'process.env.OWNERS'");
 const Owners: string[] = process.env.OWNERS.split(",");
 
 const fn: AppFile = (app) => {
-    const command = new Command(
+    const command = createCommand(
         {
             name: "eval",
             description: "Evaluates javascript code",
@@ -21,13 +21,12 @@ const fn: AppFile = (app) => {
 
                 let evaled = eval(args.join(" "));
 
-                if (evaled?.then && typeof evaled.then === "function") {
+                if (evaled?.then && Functions.isFunction(evaled.then)) {
                     evaled = await evaled;
                     respTags.push("Resolved");
                 }
 
-                if (typeof evaled !== "string") evaled = util.inspect(evaled);
-                evaled = Functions.clean(evaled);
+                evaled = Functions.clean(util.inspect(evaled));
 
                 msg.channel.send(
                     `${Emojis.SUCCESS} | **Success** ${respTags

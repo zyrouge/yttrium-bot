@@ -1,16 +1,11 @@
 import { MessageEmbed } from "discord.js";
-import { AudioFilters } from "discord-player/lib/utils/AudioFilters";
 import { AppFile } from "@/base/app";
-import { Command } from "@/base/plugins/commands";
+import { createCommand } from "@/base/plugins/commands";
+import { AudioFilters } from "@/base/plugins/music/filters";
 import { Colors, Emojis, Functions } from "@/util";
 
-const allFilters = AudioFilters.names;
-
-// Changing filter values
-AudioFilters.bassboost = "bass=g=15";
-
 const fn: AppFile = (app) => {
-    const command = new Command(
+    const command = createCommand(
         {
             name: "filter",
             description: "Enables/Disables filters",
@@ -18,64 +13,61 @@ const fn: AppFile = (app) => {
             category: "music",
         },
         async ({ msg, args, prefix }) => {
-            if (!msg.member?.voice.channel)
+            if (!msg.member.voice.channel)
                 return msg.channel.send(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
-
             if (
-                msg.guild?.me?.voice.channel &&
+                msg.guild.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
                 return msg.channel.send(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.music.get(msg.guild.id);
             if (!queue)
                 return msg.channel.send(
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
+            const validFilters = Object.keys(AudioFilters).map((x) =>
+                x.toLowerCase()
+            );
             const invalidFilters: string[] = [];
-
             if (args.length) {
-                const newFilters: Record<string, boolean> = {};
+                let newFilters: string[] = [...queue.filters.values()];
+                let changes = false;
 
                 for (let arg of args) {
-                    const filter = allFilters.find(
-                        (x) => x.toLowerCase() === arg.toLowerCase()
-                    );
-                    if (!filter) {
+                    arg = arg.toLowerCase();
+
+                    if (!validFilters.includes(arg)) {
                         invalidFilters.push(arg);
                         continue;
                     }
 
-                    // @ts-ignore
-                    newFilters[filter] = !queue.filters[filter];
+                    changes = true;
+                    if (newFilters.includes(arg))
+                        newFilters = newFilters.filter((f) => f !== arg);
+                    else newFilters.push(arg);
                 }
 
-                if (Object.keys(newFilters).length) {
-                    msg.react(Emojis.TIMER).catch(() => {});
-                    await app.music.setFilters(msg, newFilters);
-                }
+                if (changes) queue.setFilters(newFilters);
             }
 
+            const allFilters = queue.formattedFilters();
             const embed = new MessageEmbed();
-
             embed.setTitle(`${Emojis.MUSIC} | Filters`);
             embed.setDescription(
-                allFilters
-                    .map((f) => {
-                        // @ts-ignore
-                        const isEnabled = !!queue.filters[f];
+                Object.entries(allFilters)
+                    .map(([f, enabled]) => {
                         return `**${Functions.capitalize(f)}**: ${
-                            isEnabled ? Emojis.TICK : Emojis.CROSS
+                            enabled ? Emojis.TICK : Emojis.CROSS
                         }`;
                     })
                     .join("\n")
             );
-
             if (invalidFilters.length)
                 embed.addField(
                     `${Emojis.DANGER} Invalid Filters`,
@@ -83,18 +75,15 @@ const fn: AppFile = (app) => {
                         .map((x) => `\`${x}\``)
                         .join(", ")}`
                 );
-
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);
             embed.addField(
                 `${Emojis.INFO} Tip`,
                 `Use \`${prefix}${command.name} [filter1, filter2, ...]\` to add or remove filters!`
             );
-
             msg.channel.send({ embed });
         }
     );
-
     app.commands.add(command);
 };
 

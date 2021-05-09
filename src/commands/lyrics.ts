@@ -1,6 +1,6 @@
 import { Client as GeniusClient } from "genius-lyrics";
 import { AppFile } from "@/base/app";
-import { Command } from "@/base/plugins/commands";
+import { createCommand } from "@/base/plugins/commands";
 import { Constants, Emojis, Functions } from "@/util";
 
 const genius = new GeniusClient(undefined, {
@@ -12,7 +12,7 @@ const genius = new GeniusClient(undefined, {
 });
 
 const fn: AppFile = (app) => {
-    const command = new Command(
+    const command = createCommand(
         {
             name: "lyrics",
             description: "Sends lyrics of the specified song!",

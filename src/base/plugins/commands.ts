@@ -1,31 +1,42 @@
 import Discord from "discord.js";
 
-export interface Command {
+export const CommandCategories = ["misc", "music"] as const;
+export type CommandCategoryType = typeof CommandCategories[number];
+
+export interface CommandProps {
     name: string;
     description: string;
     aliases?: string[];
     usage?: string;
     cooldown?: number;
-    category: "misc" | "music";
+    category: CommandCategoryType;
 }
 
+export type CommandMessage = Discord.Message & {
+    guild: Discord.Guild;
+    member: Discord.GuildMember;
+    channel: Discord.TextChannel;
+};
+
 export type CommandRun = (options: {
-    msg: Discord.Message;
+    msg: CommandMessage;
     args: string[];
     prefix: string;
 }) => any;
 
-export class Command {
-    run: CommandRun;
+export const createCommand = (props: CommandProps, run: CommandRun) => {
+    return {
+        ...props,
+        run,
+        getUsage(prefix: string = "") {
+            let usage = prefix + this.name;
+            if (this.usage) prefix += this.usage;
+            return usage;
+        },
+    };
+};
 
-    constructor(props: Omit<Command, "run">, run: CommandRun) {
-        if (!props.name || !props.description)
-            throw new Error("Invalid 'props' were passed into 'Command'");
-
-        Object.assign(this, props);
-        this.run = run;
-    }
-}
+export type Command = ReturnType<typeof createCommand>;
 
 export class CommandManager {
     commands: Map<string, Command>;

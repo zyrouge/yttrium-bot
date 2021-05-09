@@ -1,13 +1,13 @@
 import path from "path";
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
-import { Command } from "@/base/plugins/commands";
+import { createCommand } from "@/base/plugins/commands";
 import { Colors, Emojis, Functions } from "@/util";
 
 const pkjJson = require(path.join(__dirname, "..", "..", "package.json"));
 
 const fn: AppFile = (app) => {
-    const command = new Command(
+    const command = createCommand(
         {
             name: "help",
             description: "Sends help message",

@@ -3,7 +3,6 @@ require("module-alias/register");
 import dotenv from "dotenv";
 import path from "path";
 import { App } from "@/base/app";
-import HttpStreams from "@/base/plugins/music/HttpStreams";
 
 const start = async () => {
     dotenv.config();
@@ -17,24 +16,10 @@ const start = async () => {
                 disableMentions: "everyone",
             },
         },
-        musicOptions: {
-            ytdlDownloadOptions: {
-                requestOptions: {
-                    headers: {
-                        cookie: process.env.YT_COOKIE,
-                    },
-                },
-                quality: "highestaudio",
-                filter: (format) => {
-                    return format.hasAudio && !!format.audioBitrate;
-                },
-            },
-        },
     });
 
     await app.dir(path.join(__dirname, "events"));
     await app.dir(path.join(__dirname, "commands"));
-    app.music.use("STREAM", HttpStreams);
 
     await app.ready();
     app.logger.info(`Application loaded successfully!`);

@@ -19,6 +19,7 @@ export const Emojis = {
     INFO: "ℹ",
     SOUND: "🔊",
     PAGE: "📄",
+    DISC: "📀",
 };
 
 export const Colors = {
@@ -50,16 +51,60 @@ export const Functions = {
     shuffle: <T>(arr: T[]): T[] => arr.sort((a, b) => Math.random() - 0.5),
     http: axios,
     sleep: util.promisify(setTimeout),
+    isNumber: (arg: any): arg is number => typeof arg === "number",
+    isString: (arg: any): arg is string => typeof arg === "string",
+    isFunction: (arg: any): arg is (...args: any[]) => any =>
+        typeof arg === "function",
+    parseMs(ms: number) {
+        let secs = ms / 1000;
+
+        const days = secs / (24 * 60 * 60);
+        secs %= 24 * 60 * 60;
+
+        const hours = secs / (60 * 60);
+        secs %= 60 * 60;
+
+        const mins = secs / 60;
+        secs %= 60;
+
+        return {
+            days: Math.trunc(days),
+            hours: Math.trunc(hours),
+            mins: Math.trunc(mins),
+            secs: Math.trunc(secs),
+        };
+    },
+    humanize: (parsed: Record<string, number>) =>
+        Object.entries(parsed)
+            .map(([key, val]) => `${val}${key[0]}`)
+            .join(" "),
+    merge2Obj<T>(one: T, two: T) {
+        for (const key in two) {
+            if (Object.prototype.hasOwnProperty.call(two, key)) {
+                const ele = two[key];
+                if (typeof ele === "object")
+                    one[key] = Functions.merge2Obj(one[key], ele);
+                else one[key] = ele;
+            }
+        }
+        return one;
+    },
+    mergeObj<T>(res: T, ...objs: T[]) {
+        objs.forEach((obj) => Functions.merge2Obj(res, obj));
+        return res;
+    },
 };
 
 export const Constants = {
     http: {
         UserAgent:
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
     },
     regex: {
         discordMention: (id: string = "\\d+", flags?: string) =>
             new RegExp(`<@!?${id}>`, flags),
         url: /^(https?:\/\/)/,
+        audioOrVideoContentType: /^(audio|video)\//,
+        youtubeVideo: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
     },
 };

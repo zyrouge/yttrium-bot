@@ -1,9 +1,9 @@
 import { AppFile } from "@/base/app";
-import { Command } from "@/base/plugins/commands";
+import { createCommand } from "@/base/plugins/commands";
 import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    const command = new Command(
+    const command = createCommand(
         {
             name: "ping",
             description: "Sends bot's response time",
@@ -12,9 +12,7 @@ const fn: AppFile = (app) => {
         },
         async ({ msg }) => {
             const start = Date.now();
-            const nmsg = await msg.channel.send(
-                `${Emojis.TIMER} | Pinging...`
-            );
+            const nmsg = await msg.channel.send(`${Emojis.TIMER} | Pinging...`);
             nmsg.edit(
                 `${Emojis.PING_PONG} | Pong! It took ${
                     nmsg.createdAt.valueOf() - msg.createdAt.valueOf()

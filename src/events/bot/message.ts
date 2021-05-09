@@ -1,5 +1,6 @@
 import Discord from "discord.js";
 import { AppFile } from "@/base/app";
+import { CommandMessage } from "@/base/plugins/commands";
 import { Constants } from "@/util";
 
 const fn: AppFile = (app) => {
@@ -26,7 +27,7 @@ const fn: AppFile = (app) => {
         if (!command) return;
 
         command.run({
-            msg,
+            msg: msg as CommandMessage,
             prefix,
             args,
         });

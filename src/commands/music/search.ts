@@ -1,9 +1,9 @@
 import { AppFile } from "@/base/app";
-import { Command } from "@/base/plugins/commands";
+import { createCommand } from "@/base/plugins/commands";
 import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    const command = new Command(
+    const command = createCommand(
         {
             name: "search",
             description: "Searches and plays/adds a song to the queue",
@@ -11,13 +11,13 @@ const fn: AppFile = (app) => {
             category: "music",
         },
         async ({ msg, args }) => {
-            if (!msg.member?.voice.channel)
+            if (!msg.member.voice.channel)
                 return msg.channel.send(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
             if (
-                msg.guild?.me?.voice.channel &&
+                msg.guild.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
                 return msg.channel.send(
@@ -30,7 +30,7 @@ const fn: AppFile = (app) => {
                 );
 
             msg.react(Emojis.SEARCH).catch(() => {});
-            app.music.play(msg, args.join(" "));
+            // app.music.play(msg, args.join(" "));
         }
     );
 

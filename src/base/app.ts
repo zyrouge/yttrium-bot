@@ -1,32 +1,30 @@
 import pino from "pino";
 import path from "path";
 import { promises as fs } from "fs";
-import { Player, PlayerOptions } from "discord-player";
 import { Bot, BotOptions } from "@/base/bot";
 import { CommandManager } from "@/base/plugins/commands";
+import { GuildAudioManager } from "@/base/plugins/music/queue";
+import { Functions } from "@/util";
 
 export type AppFile = (app: App) => any;
 
 export interface AppOptions {
     botOptions: BotOptions;
-    musicOptions: PlayerOptions;
 }
 
 export class App {
     options: AppOptions;
-    logger: pino.Logger;
     bot: Bot;
-    commands: CommandManager;
-    music: Player;
-    cacheData: Map<string, any>;
+    logger = pino();
+    commands = new CommandManager();
+    music: Map<string, GuildAudioManager> = new Map();
+    cacheData: Map<string, any> = new Map();
 
     constructor(options: AppOptions) {
         this.options = options;
         this.logger = pino();
         this.bot = new Bot(options.botOptions);
         this.commands = new CommandManager();
-        this.music = new Player(this.bot, options.musicOptions);
-        this.cacheData = new Map();
     }
 
     async dir(dir: string) {
@@ -41,8 +39,9 @@ export class App {
 
     async file(dir: string) {
         const file: { default: AppFile } | undefined = require(dir);
-        if (typeof file?.default !== "function")
+        if (!file?.default || !Functions.isFunction(file?.default))
             return this.logger.error(`Failed to handle ${dir}!`);
+
         await file.default(this);
         this.logger.info(`Loaded ${dir} successfully!`);
     }
