@@ -14,7 +14,12 @@ const fn: AppFile = (app) => {
             );
             embed.setDescription(
                 tracks
-                    .map((t, i) => `${i + 1}. **[${t.title}]${t.url}**`)
+                    .map(
+                        (t, i) =>
+                            `${i + 1}. **[${t.title}](${t.url})** [${
+                                t.duration
+                            }]`
+                    )
                     .join("\n")
             );
             embed.setTimestamp();
