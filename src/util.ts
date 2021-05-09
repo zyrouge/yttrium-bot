@@ -62,4 +62,14 @@ export const Constants = {
             new RegExp(`<@!?${id}>`, flags),
         url: /^(https?:\/\/)/,
     },
+    urls: {
+        animeList: {
+            base: "https://myanimelist.net",
+            top(filter?: string) {
+                let out = `${this.base}/topanime.php`;
+                if (filter) out += `?type=${filter}`;
+                return out;
+            },
+        },
+    },
 };

@@ -6,7 +6,7 @@ export interface Command {
     aliases?: string[];
     usage?: string;
     cooldown?: number;
-    category: "misc" | "music";
+    category: "misc" | "music" | "anime";
 }
 
 export type CommandRun = (options: {

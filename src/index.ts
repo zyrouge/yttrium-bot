@@ -34,7 +34,7 @@ const start = async () => {
 
     await app.dir(path.join(__dirname, "events"));
     await app.dir(path.join(__dirname, "commands"));
-    app.music.use("STREAM", HttpStreams);
+    app.music.use("URL_STREAM", HttpStreams);
 
     await app.ready();
     app.logger.info(`Application loaded successfully!`);
