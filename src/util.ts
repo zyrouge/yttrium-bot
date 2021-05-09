@@ -24,7 +24,7 @@ export const Emojis = {
 export const Colors = {
     YELLOW: 16767232,
     BLUE: 5940704,
-    WHITE: 16777215,
+    WHITE: 16711679,
 };
 
 export const Functions = {
