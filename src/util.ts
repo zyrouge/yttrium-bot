@@ -2,9 +2,9 @@ import axios from "axios";
 import util from "util";
 
 export const Emojis = {
-    TIMER: "⏲",
+    TIMER: "⌛",
     PING_PONG: "🏓",
-    DANGER: "‼",
+    DANGER: "🚫",
     MUSIC: "🎶",
     SEARCH: "🔎",
     SUCCESS: "👍",
@@ -16,7 +16,7 @@ export const Emojis = {
     SINGLE_REPEAT: "🔂",
     TICK: "✅",
     CROSS: "❌",
-    INFO: "ℹ",
+    INFO: "🔖",
     SOUND: "🔊",
     PAGE: "📄",
     WHITE_FLOWER: "💮",
