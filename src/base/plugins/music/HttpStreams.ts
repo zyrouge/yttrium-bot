@@ -4,6 +4,8 @@ import { Constants } from "@/util";
 
 const validate = (str: string) => {
     const query = Util.getQueryType(str);
+    if (["vimeo", "facebook", "reverbnation", "attachment"].includes(query))
+        return true;
     return query === "youtube_search" && Constants.regex.url.test(str);
 };
 
@@ -23,7 +25,7 @@ const getInfo = (query: string) => {
     };
 };
 
-const important = false;
+const important = true;
 
 export default {
     getInfo,

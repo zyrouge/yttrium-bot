@@ -9,10 +9,19 @@ const fn: AppFile = (app) => {
             description: "Removes a song the queue",
             aliases: ["rm"],
             category: "music",
+            args: [
+                {
+                    name: "index",
+                    alias: "i",
+                    type: Number,
+                    defaultValue: null,
+                    defaultOption: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
@@ -20,29 +29,32 @@ const fn: AppFile = (app) => {
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
             const queue = app.music.getQueue(msg);
             if (!queue)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
-            if (!args[0])
-                return msg.channel.send(
+            if (!("index" in args))
+                return msg.reply(
                     `${Emojis.DANGER} | Provide a song index to remove!`
                 );
 
-            const index = args[0] && !isNaN(args[0] as any) ? +args[0] - 1 : -1;
+            const index =
+                typeof args.index === "number" && !isNaN(args.index)
+                    ? args.index - 1
+                    : -1;
             if (index < 0 || !queue.tracks[index])
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Invalid song index was provided!`
                 );
 
             const removed = app.music.remove(msg, index);
-            msg.channel.send(
+            msg.reply(
                 `${Emojis.SUCCESS} | Removed **${removed.title}** from the queue!`
             );
         }

@@ -16,10 +16,19 @@ const fn: AppFile = (app) => {
             description: "Enables/Disables filters",
             aliases: ["fl", "fx", "effects", "filters", "effect"],
             category: "music",
+            args: [
+                {
+                    name: "filter",
+                    alias: "f",
+                    type: String,
+                    defaultOption: true,
+                    multiple: true,
+                },
+            ],
         },
         async ({ msg, args, prefix }) => {
             if (!msg.member?.voice.channel)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
@@ -27,22 +36,21 @@ const fn: AppFile = (app) => {
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
             const queue = app.music.getQueue(msg);
             if (!queue)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
             const invalidFilters: string[] = [];
-
-            if (args.length) {
+            if (args.filter) {
                 const newFilters: Record<string, boolean> = {};
 
-                for (let arg of args) {
+                for (const arg of args.filter) {
                     const filter = allFilters.find(
                         (x) => x.toLowerCase() === arg.toLowerCase()
                     );
@@ -91,7 +99,7 @@ const fn: AppFile = (app) => {
                 `Use \`${prefix}${command.name} [filter1, filter2, ...]\` to add or remove filters!`
             );
 
-            msg.channel.send({ embed });
+            msg.reply({ embed });
         }
     );
 

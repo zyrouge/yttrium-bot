@@ -2,7 +2,7 @@ import { Client, ClientOptions } from "discord.js";
 
 export interface BotOptions {
     token: string;
-    clientOptions?: ClientOptions;
+    clientOptions: ClientOptions;
 }
 
 export class Bot extends Client {

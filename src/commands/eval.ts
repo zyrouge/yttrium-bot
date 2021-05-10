@@ -13,14 +13,27 @@ const fn: AppFile = (app) => {
             description: "Evaluates javascript code",
             aliases: ["ev"],
             category: "misc",
+            args: [
+                {
+                    name: "code",
+                    alias: "c",
+                    type: String,
+                    defaultOption: true,
+                    multiple: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!Owners.includes(msg.author.id)) return;
             try {
                 const respTags: string[] = [];
 
-                let evaled = eval(args.join(" "));
+                if (!args.code)
+                    return msg.reply(
+                        `${Emojis.DANGER} | Provide some search terms to fetch results!`
+                    );
 
+                let evaled = eval(args.code.join(" "));
                 if (evaled?.then && typeof evaled.then === "function") {
                     evaled = await evaled;
                     respTags.push("Resolved");
@@ -29,7 +42,7 @@ const fn: AppFile = (app) => {
                 if (typeof evaled !== "string") evaled = util.inspect(evaled);
                 evaled = Functions.clean(evaled);
 
-                msg.channel.send(
+                msg.reply(
                     `${Emojis.SUCCESS} | **Success** ${respTags
                         .map((x) => `(${x})`)
                         .join(" ")}\n\`\`\`xl\n${Functions.shorten(
@@ -38,7 +51,7 @@ const fn: AppFile = (app) => {
                     )}\`\`\``
                 );
             } catch (err) {
-                msg.channel.send(
+                return msg.reply(
                     `${
                         Emojis.DANGER
                     } | **Error**\n\`\`\`xl\n${Functions.shorten(

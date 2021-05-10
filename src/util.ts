@@ -2,9 +2,9 @@ import axios from "axios";
 import util from "util";
 
 export const Emojis = {
-    TIMER: "⏲",
+    TIMER: "⌛",
     PING_PONG: "🏓",
-    DANGER: "‼",
+    DANGER: "🚫",
     MUSIC: "🎶",
     SEARCH: "🔎",
     SUCCESS: "👍",
@@ -16,15 +16,17 @@ export const Emojis = {
     SINGLE_REPEAT: "🔂",
     TICK: "✅",
     CROSS: "❌",
-    INFO: "ℹ",
+    INFO: "🔖",
     SOUND: "🔊",
     PAGE: "📄",
+    WHITE_FLOWER: "💮",
 };
 
 export const Colors = {
     YELLOW: 16767232,
     BLUE: 5940704,
     WHITE: 16711679,
+    PURPLE: 14091260,
 };
 
 export const Functions = {
@@ -50,6 +52,8 @@ export const Functions = {
     shuffle: <T>(arr: T[]): T[] => arr.sort((a, b) => Math.random() - 0.5),
     http: axios,
     sleep: util.promisify(setTimeout),
+    getHostFromURL: (url: string) =>
+        url.match(/https?:\/\/(.*)\/?/)?.[1] || url,
 };
 
 export const Constants = {
@@ -61,5 +65,15 @@ export const Constants = {
         discordMention: (id: string = "\\d+", flags?: string) =>
             new RegExp(`<@!?${id}>`, flags),
         url: /^(https?:\/\/)/,
+    },
+    urls: {
+        animeList: {
+            base: "https://myanimelist.net",
+            top(filter?: string) {
+                let out = `${this.base}/topanime.php`;
+                if (filter) out += `?type=${filter}`;
+                return out;
+            },
+        },
     },
 };

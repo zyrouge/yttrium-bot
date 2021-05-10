@@ -10,10 +10,11 @@ const fn: AppFile = (app) => {
             description: "Shows the currently playing track",
             aliases: ["np", "current"],
             category: "music",
+            args: [],
         },
         async ({ msg }) => {
             if (!msg.member?.voice.channel)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
@@ -21,14 +22,14 @@ const fn: AppFile = (app) => {
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
             const queue = app.music.getQueue(msg);
             const track = app.music.nowPlaying(msg);
             if (!queue || !track)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
@@ -58,7 +59,7 @@ const fn: AppFile = (app) => {
                 }`
             );
 
-            msg.channel.send({ embed });
+            msg.reply({ embed });
         }
     );
 
