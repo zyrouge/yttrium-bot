@@ -9,6 +9,15 @@ const fn: AppFile = (app) => {
             description: "Enables/Disables looping",
             aliases: ["lp", "repeat", "re"],
             category: "music",
+            args: [
+                {
+                    name: "loop",
+                    alias: "l",
+                    type: String,
+                    defaultValue: null,
+                    defaultOption: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)

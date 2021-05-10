@@ -1,3 +1,4 @@
+import { Message } from "discord.js";
 import { Client as GeniusClient } from "genius-lyrics";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
@@ -18,20 +19,30 @@ const fn: AppFile = (app) => {
             description: "Sends lyrics of the specified song!",
             aliases: ["ly"],
             category: "music",
+            args: [
+                {
+                    name: "terms",
+                    alias: "t",
+                    type: String,
+                    multiple: true,
+                    defaultOption: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
-            const term = args.join(" ");
-            if (!term.length)
+            if (!args.terms)
                 return msg.channel.send(
                     `${Emojis.DANGER} | Provide some arguments to resolve songs!`
                 );
 
+            let nmsg: Message | undefined;
             try {
+                const terms = args.terms.join(" ");
                 const nmsg = await msg.channel.send(
-                    `${Emojis.SEARCH} | Searching lyrics for \`${term}\`...`
+                    `${Emojis.SEARCH} | Searching lyrics for \`${terms}\`...`
                 );
 
-                const song = (await genius.songs.search(term))?.[0];
+                const song = (await genius.songs.search(terms))?.[0];
                 if (!song)
                     return nmsg.edit(`${Emojis.SAD} | Couldn't find the song!`);
 
@@ -67,11 +78,11 @@ const fn: AppFile = (app) => {
                     await Functions.sleep(250);
                 }
             } catch (err) {
-                return msg.channel.send(
-                    `${Emojis.DANGER} | Something went wrong! (${
-                        err?.message ? err.message : err.toString()
-                    })`
-                );
+                const content = `${Emojis.DANGER} | Something went wrong! (${
+                    err?.message ? err.message : err.toString()
+                })`;
+                if (nmsg && nmsg.editable) return nmsg.edit(content);
+                return msg.channel.send(content);
             }
         }
     );

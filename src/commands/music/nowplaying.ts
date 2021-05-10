@@ -10,6 +10,7 @@ const fn: AppFile = (app) => {
             description: "Shows the currently playing track",
             aliases: ["np", "current"],
             category: "music",
+            args: [],
         },
         async ({ msg }) => {
             if (!msg.member?.voice.channel)

@@ -9,6 +9,15 @@ const fn: AppFile = (app) => {
             description: "Removes a song the queue",
             aliases: ["rm"],
             category: "music",
+            args: [
+                {
+                    name: "index",
+                    alias: "i",
+                    type: Number,
+                    defaultValue: null,
+                    defaultOption: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
@@ -30,12 +39,15 @@ const fn: AppFile = (app) => {
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
-            if (!args[0])
+            if (!("index" in args))
                 return msg.channel.send(
                     `${Emojis.DANGER} | Provide a song index to remove!`
                 );
 
-            const index = args[0] && !isNaN(args[0] as any) ? +args[0] - 1 : -1;
+            const index =
+                typeof args.index === "number" && !isNaN(args.index)
+                    ? args.index - 1
+                    : -1;
             if (index < 0 || !queue.tracks[index])
                 return msg.channel.send(
                     `${Emojis.DANGER} | Invalid song index was provided!`

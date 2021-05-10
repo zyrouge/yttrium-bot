@@ -13,14 +13,27 @@ const fn: AppFile = (app) => {
             description: "Evaluates javascript code",
             aliases: ["ev"],
             category: "misc",
+            args: [
+                {
+                    name: "code",
+                    alias: "c",
+                    type: String,
+                    defaultOption: true,
+                    multiple: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!Owners.includes(msg.author.id)) return;
             try {
                 const respTags: string[] = [];
 
-                let evaled = eval(args.join(" "));
+                if (!args.code)
+                    return msg.channel.send(
+                        `${Emojis.DANGER} | Provide some search terms to fetch results!`
+                    );
 
+                let evaled = eval(args.code.join(" "));
                 if (evaled?.then && typeof evaled.then === "function") {
                     evaled = await evaled;
                     respTags.push("Resolved");

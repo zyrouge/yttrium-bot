@@ -16,6 +16,15 @@ const fn: AppFile = (app) => {
             description: "Enables/Disables filters",
             aliases: ["fl", "fx", "effects", "filters", "effect"],
             category: "music",
+            args: [
+                {
+                    name: "filter",
+                    alias: "f",
+                    type: String,
+                    defaultOption: true,
+                    multiple: true,
+                },
+            ],
         },
         async ({ msg, args, prefix }) => {
             if (!msg.member?.voice.channel)
@@ -38,11 +47,10 @@ const fn: AppFile = (app) => {
                 );
 
             const invalidFilters: string[] = [];
-
-            if (args.length) {
+            if (args.filter) {
                 const newFilters: Record<string, boolean> = {};
 
-                for (let arg of args) {
+                for (const arg of args.filter) {
                     const filter = allFilters.find(
                         (x) => x.toLowerCase() === arg.toLowerCase()
                     );

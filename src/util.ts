@@ -19,12 +19,14 @@ export const Emojis = {
     INFO: "ℹ",
     SOUND: "🔊",
     PAGE: "📄",
+    WHITE_FLOWER: "💮",
 };
 
 export const Colors = {
     YELLOW: 16767232,
     BLUE: 5940704,
     WHITE: 16711679,
+    PURPLE: 14091260,
 };
 
 export const Functions = {
@@ -50,6 +52,8 @@ export const Functions = {
     shuffle: <T>(arr: T[]): T[] => arr.sort((a, b) => Math.random() - 0.5),
     http: axios,
     sleep: util.promisify(setTimeout),
+    getHostFromURL: (url: string) =>
+        url.match(/https?:\/\/(.*)\/?/)?.[1] || url,
 };
 
 export const Constants = {

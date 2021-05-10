@@ -1,6 +1,6 @@
 import pino from "pino";
 import path from "path";
-import { promises as fs } from "fs";
+import fs from "fs-extra";
 import { Player, PlayerOptions } from "discord-player";
 import { Bot, BotOptions } from "@/base/bot";
 import { CommandManager } from "@/base/plugins/commands";

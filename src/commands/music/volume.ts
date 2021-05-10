@@ -9,6 +9,15 @@ const fn: AppFile = (app) => {
             description: "Shows/Sets the queue volume of the queue",
             aliases: ["vol"],
             category: "music",
+            args: [
+                {
+                    name: "volume",
+                    alias: "vol",
+                    type: Number,
+                    defaultOption: true,
+                    defaultValue: null,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
@@ -30,11 +39,13 @@ const fn: AppFile = (app) => {
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
-            if (args.length) {
+            if ("volume" in args) {
                 const vol =
-                    args[0] && !isNaN(args[0] as any) ? +args[0] : false;
+                    typeof args.volume === "number" && !isNaN(args.volume)
+                        ? args.volume
+                        : -1;
 
-                if (typeof vol !== "number" || vol < 0 || vol > 100)
+                if (vol < 0 || vol > 100)
                     return msg.channel.send(
                         `${Emojis.DANGER} | Invalid volume was provided. Volume must be between 1 and 100!`
                     );

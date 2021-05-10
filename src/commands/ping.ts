@@ -9,12 +9,11 @@ const fn: AppFile = (app) => {
             description: "Sends bot's response time",
             aliases: ["pong"],
             category: "misc",
+            args: [],
         },
         async ({ msg }) => {
             const start = Date.now();
-            const nmsg = await msg.channel.send(
-                `${Emojis.TIMER} | Pinging...`
-            );
+            const nmsg = await msg.channel.send(`${Emojis.TIMER} | Pinging...`);
             nmsg.edit(
                 `${Emojis.PING_PONG} | Pong! It took ${
                     nmsg.createdAt.valueOf() - msg.createdAt.valueOf()

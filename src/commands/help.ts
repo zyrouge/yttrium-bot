@@ -13,6 +13,7 @@ const fn: AppFile = (app) => {
             description: "Sends help message",
             aliases: ["cmds", "commands", "hlp"],
             category: "misc",
+            args: [], // todo
         },
         async ({ msg, args }) => {
             const allCommands = [...app.commands.commands.values()];

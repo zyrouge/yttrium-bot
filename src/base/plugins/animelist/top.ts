@@ -28,7 +28,32 @@ export interface TopAnimeEntity {
     run: string;
 }
 
-export const TopAnimes = async (options: TopAnimesOptions) => {
+// 6 hours 21600
+export const MaxAliveTime = 10 * 1000;
+
+export const TopAnimeCache: Map<
+    TopAnimeTypesType | "all",
+    {
+        animes: TopAnimeEntity[];
+        lastUpdated: number;
+    }
+> = new Map();
+
+export const getAnimes = async (options: TopAnimesOptions) => {
+    let data = TopAnimeCache.get(options.type || "all");
+    if (data && Date.now() > data.lastUpdated + MaxAliveTime) data = undefined;
+    if (!data) {
+        const animes = await TopAnimesFetcher(options);
+        data = {
+            animes,
+            lastUpdated: Date.now(),
+        };
+        TopAnimeCache.set(options.type || "all", data);
+    }
+    return data;
+};
+
+export const TopAnimesFetcher = async (options: TopAnimesOptions) => {
     const { data } = await axios.get(
         Constants.urls.animeList.top(options.type),
         {
@@ -66,5 +91,5 @@ export const TopAnimes = async (options: TopAnimesOptions) => {
         });
     });
 
-    console.log(animes[0]);
+    return animes;
 };

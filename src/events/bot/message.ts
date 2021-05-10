@@ -1,6 +1,11 @@
 import Discord from "discord.js";
 import { AppFile } from "@/base/app";
-import { Constants } from "@/util";
+import { Constants, Emojis } from "@/util";
+import {
+    ArgsParser,
+    ArgsParserReturn,
+    ArgsErrorFormatter,
+} from "@/base/plugins/commands";
 
 const fn: AppFile = (app) => {
     app.bot.on("message", (msg: Discord.Message) => {
@@ -20,14 +25,24 @@ const fn: AppFile = (app) => {
         }
 
         if (!prefix || !content) return;
-        const [cmdName, ...args] = content.split(" ");
+        const [cmdName, ...contents] = content.split(" ");
 
         const command = app.commands.resolve(cmdName);
         if (!command) return;
 
+        let args: ArgsParserReturn;
+        try {
+            args = ArgsParser(contents, command.args);
+        } catch (err) {
+            return msg.channel.send(
+                `${Emojis.DANGER} | ${ArgsErrorFormatter(err)}`
+            );
+        }
+
         command.run({
             msg,
             prefix,
+            contents,
             args,
         });
     });

@@ -9,6 +9,7 @@ const fn: AppFile = (app) => {
             description: "Plays/Adds a song to the queue",
             aliases: ["pl"],
             category: "music",
+            args: [],
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)

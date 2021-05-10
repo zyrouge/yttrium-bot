@@ -9,6 +9,15 @@ const fn: AppFile = (app) => {
             description: "Searches and plays/adds a song to the queue",
             aliases: ["se"],
             category: "music",
+            args: [
+                {
+                    name: "term",
+                    alias: "t",
+                    type: String,
+                    multiple: true,
+                    defaultOption: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
@@ -24,13 +33,13 @@ const fn: AppFile = (app) => {
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
-            if (!args.length)
+            if (!args.term)
                 return msg.channel.send(
                     `${Emojis.DANGER} | Provide some search terms to fetch results!`
                 );
 
             msg.react(Emojis.SEARCH).catch(() => {});
-            app.music.play(msg, args.join(" "));
+            app.music.play(msg, args.term.join(" "));
         }
     );
 

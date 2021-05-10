@@ -2,6 +2,7 @@ require("module-alias/register");
 
 import dotenv from "dotenv";
 import path from "path";
+import { Intents } from "discord.js";
 import { App } from "@/base/app";
 import HttpStreams from "@/base/plugins/music/HttpStreams";
 
@@ -14,7 +15,11 @@ const start = async () => {
         botOptions: {
             token: process.env.TOKEN,
             clientOptions: {
-                disableMentions: "everyone",
+                intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+                allowedMentions: {
+                    parse: ["roles", "users"],
+                    repliedUser: false,
+                },
             },
         },
         musicOptions: {

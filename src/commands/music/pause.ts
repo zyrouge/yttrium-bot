@@ -9,6 +9,7 @@ const fn: AppFile = (app) => {
             description: "Pauses the current queue",
             aliases: ["pa"],
             category: "music",
+            args: [],
         },
         async ({ msg }) => {
             if (!msg.member?.voice.channel)

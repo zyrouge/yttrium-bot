@@ -1,4 +1,30 @@
 import Discord from "discord.js";
+import commandLineArgs, { OptionDefinition } from "command-line-args";
+
+export const ArgsParser = (args: string[], options: OptionDefinition[]) =>
+    commandLineArgs(options, { argv: args });
+export type ArgsParserReturn = ReturnType<typeof ArgsParser>;
+
+export const ArgsErrorFormatter = (err: any) => {
+    switch (err.name) {
+        case "UNKNOWN_OPTION":
+            return `Invalid command option (\`${err.optionName}\`) was passed!`;
+
+        case "UNKNOWN_VALUE":
+            return `Invalid command value (\`${err.value}\`) was passed!`;
+
+        case "ALREADY_SET":
+            return `Duplicate command option (\`${err.optionName}\`${
+                err.value ? ` with value \`${err.value}\`` : ""
+            }) was passed!`;
+
+        case "INVALID_DEFINITIONS":
+            return `Invalid command definition (\`${err.optionName}\`) was passed!`;
+
+        default:
+            return err.toString();
+    }
+};
 
 export interface Command {
     name: string;
@@ -7,11 +33,13 @@ export interface Command {
     usage?: string;
     cooldown?: number;
     category: "misc" | "music" | "anime";
+    args: OptionDefinition[];
 }
 
 export type CommandRun = (options: {
     msg: Discord.Message;
-    args: string[];
+    contents: string[];
+    args: ArgsParserReturn;
     prefix: string;
 }) => any;
 
@@ -19,7 +47,7 @@ export class Command {
     run: CommandRun;
 
     constructor(props: Omit<Command, "run">, run: CommandRun) {
-        if (!props.name || !props.description)
+        if (!props.name || !props.description || !props.category)
             throw new Error("Invalid 'props' were passed into 'Command'");
 
         Object.assign(this, props);
