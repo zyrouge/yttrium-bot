@@ -35,7 +35,7 @@
     "better-sqlite3": "^7.3.1",
     "cheerio": "^1.0.0-rc.9",
     "command-line-args": "^5.1.1",
-    "discord-player": "^4.0.5",
+    "discord-player": "^4.0.7",
     "discord.js": "github:discordjs/discord.js#master",
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.3.0",
