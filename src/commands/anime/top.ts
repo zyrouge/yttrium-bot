@@ -40,7 +40,7 @@ const fn: AppFile = (app) => {
             try {
                 const type = args.type?.toLowerCase() as TopAnimeTypesType;
                 if (type && !TopAnimeTypes.includes(type))
-                    return msg.channel.send(
+                    return msg.reply(
                         `${
                             Emojis.DANGER
                         } | Invalid anime list category! Available categories: ${TopAnimeTypes.map(
@@ -67,7 +67,7 @@ const fn: AppFile = (app) => {
                 const startIndex = page * itemsPerPage;
                 const animes = all.slice(startIndex, startIndex + itemsPerPage);
                 if (!animes.length)
-                    return msg.channel.send(
+                    return msg.reply(
                         `${Emojis.SAD} | Page **${page + 1}** is empty!`
                     );
 
@@ -93,9 +93,9 @@ const fn: AppFile = (app) => {
                     )} | Source: ${Constants.urls.animeList.base}`
                 );
 
-                msg.channel.send({ embed });
+                msg.reply({ embed });
             } catch (err) {
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Something went wrong! (${err})`
                 );
             }

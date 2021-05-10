@@ -34,17 +34,21 @@ const fn: AppFile = (app) => {
         try {
             args = ArgsParser(contents, command.args);
         } catch (err) {
-            return msg.channel.send(
-                `${Emojis.DANGER} | ${ArgsErrorFormatter(err)}`
-            );
+            return msg.reply(`${Emojis.DANGER} | ${ArgsErrorFormatter(err)}`);
         }
 
-        command.run({
-            msg,
-            prefix,
-            contents,
-            args,
-        });
+        try {
+            command.run({
+                msg,
+                prefix,
+                contents,
+                args,
+            });
+        } catch (err) {
+            return msg.reply(
+                `${Emojis.DANGER} | Something went wrong while running the command! (${err})`
+            );
+        }
     });
 };
 

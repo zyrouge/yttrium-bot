@@ -29,7 +29,7 @@ const fn: AppFile = (app) => {
                 const respTags: string[] = [];
 
                 if (!args.code)
-                    return msg.channel.send(
+                    return msg.reply(
                         `${Emojis.DANGER} | Provide some search terms to fetch results!`
                     );
 
@@ -42,7 +42,7 @@ const fn: AppFile = (app) => {
                 if (typeof evaled !== "string") evaled = util.inspect(evaled);
                 evaled = Functions.clean(evaled);
 
-                msg.channel.send(
+                msg.reply(
                     `${Emojis.SUCCESS} | **Success** ${respTags
                         .map((x) => `(${x})`)
                         .join(" ")}\n\`\`\`xl\n${Functions.shorten(
@@ -51,7 +51,7 @@ const fn: AppFile = (app) => {
                     )}\`\`\``
                 );
             } catch (err) {
-                msg.channel.send(
+                return msg.reply(
                     `${
                         Emojis.DANGER
                     } | **Error**\n\`\`\`xl\n${Functions.shorten(

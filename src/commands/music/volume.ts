@@ -21,7 +21,7 @@ const fn: AppFile = (app) => {
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
@@ -29,13 +29,13 @@ const fn: AppFile = (app) => {
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
             const queue = app.music.getQueue(msg);
             if (!queue)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
@@ -46,14 +46,14 @@ const fn: AppFile = (app) => {
                         : -1;
 
                 if (vol < 0 || vol > 100)
-                    return msg.channel.send(
+                    return msg.reply(
                         `${Emojis.DANGER} | Invalid volume was provided. Volume must be between 1 and 100!`
                     );
 
                 app.music.setVolume(msg, vol);
             }
 
-            msg.channel.send(`${Emojis.MUSIC} | Volume: \`${queue.volume}%\``);
+            msg.reply(`${Emojis.MUSIC} | Volume: \`${queue.volume}%\``);
         }
     );
 

@@ -31,14 +31,14 @@ const fn: AppFile = (app) => {
         },
         async ({ msg, args }) => {
             if (!args.terms)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Provide some arguments to resolve songs!`
                 );
 
             let nmsg: Message | undefined;
             try {
                 const terms = args.terms.join(" ");
-                const nmsg = await msg.channel.send(
+                const nmsg = await msg.reply(
                     `${Emojis.SEARCH} | Searching lyrics for \`${terms}\`...`
                 );
 
@@ -74,7 +74,7 @@ const fn: AppFile = (app) => {
 
                 nmsg.delete().catch(() => {});
                 for (const page of pages) {
-                    msg.channel.send(page);
+                    msg.reply(page);
                     await Functions.sleep(250);
                 }
             } catch (err) {
@@ -82,7 +82,7 @@ const fn: AppFile = (app) => {
                     err?.message ? err.message : err.toString()
                 })`;
                 if (nmsg && nmsg.editable) return nmsg.edit(content);
-                return msg.channel.send(content);
+                return msg.reply(content);
             }
         }
     );

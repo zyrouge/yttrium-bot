@@ -14,7 +14,7 @@ const fn: AppFile = (app) => {
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
@@ -22,13 +22,13 @@ const fn: AppFile = (app) => {
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
             const queue = app.music.getQueue(msg);
             if (!queue)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
@@ -40,15 +40,13 @@ const fn: AppFile = (app) => {
 
             const page = args[0] && !isNaN(args[0] as any) ? +args[0] - 1 : 0;
             if (page < 0)
-                return msg.channel.send(
-                    `${Emojis.DANGER} | Invalid page number!`
-                );
+                return msg.reply(`${Emojis.DANGER} | Invalid page number!`);
 
             const perpage = 5;
             const start = page * perpage;
             const songs = queue.tracks.slice(start, start + perpage);
             if (!songs.length)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.SAD} | No songs were found on **page ${page}**!`
                 );
 
@@ -77,7 +75,7 @@ const fn: AppFile = (app) => {
                 )} | Total tracks: ${queue.tracks.length}`
             );
 
-            msg.channel.send({ embed });
+            msg.reply({ embed });
         }
     );
 

@@ -28,7 +28,7 @@ const fn: AppFile = (app) => {
             );
 
             if (!cmds.length)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.SAD} | Page **${
                         page + 1
                     }** of the commands is empty!`
@@ -65,7 +65,7 @@ const fn: AppFile = (app) => {
                 } | Author: ${pkjJson?.author || "-"}`
             );
 
-            msg.channel.send({ embed });
+            msg.reply({ embed });
         }
     );
 

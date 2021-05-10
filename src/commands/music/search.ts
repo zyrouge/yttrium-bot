@@ -21,7 +21,7 @@ const fn: AppFile = (app) => {
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
@@ -29,12 +29,12 @@ const fn: AppFile = (app) => {
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
             if (!args.term)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Provide some search terms to fetch results!`
                 );
 

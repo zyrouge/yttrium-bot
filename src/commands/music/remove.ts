@@ -21,7 +21,7 @@ const fn: AppFile = (app) => {
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
                 );
 
@@ -29,18 +29,18 @@ const fn: AppFile = (app) => {
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
             )
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
                 );
 
             const queue = app.music.getQueue(msg);
             if (!queue)
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Nothing is being played right now!`
                 );
 
             if (!("index" in args))
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Provide a song index to remove!`
                 );
 
@@ -49,12 +49,12 @@ const fn: AppFile = (app) => {
                     ? args.index - 1
                     : -1;
             if (index < 0 || !queue.tracks[index])
-                return msg.channel.send(
+                return msg.reply(
                     `${Emojis.DANGER} | Invalid song index was provided!`
                 );
 
             const removed = app.music.remove(msg, index);
-            msg.channel.send(
+            msg.reply(
                 `${Emojis.SUCCESS} | Removed **${removed.title}** from the queue!`
             );
         }

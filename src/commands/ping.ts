@@ -13,7 +13,7 @@ const fn: AppFile = (app) => {
         },
         async ({ msg }) => {
             const start = Date.now();
-            const nmsg = await msg.channel.send(`${Emojis.TIMER} | Pinging...`);
+            const nmsg = await msg.reply(`${Emojis.TIMER} | Pinging...`);
             nmsg.edit(
                 `${Emojis.PING_PONG} | Pong! It took ${
                     nmsg.createdAt.valueOf() - msg.createdAt.valueOf()
