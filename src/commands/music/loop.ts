@@ -20,35 +20,39 @@ const fn: AppFile = (app) => {
             ],
         },
         async ({ msg, args }) => {
-            if (!msg.member?.voice.channel)
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
-                );
+            if (!msg.member?.voice.channel) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
+                };
+            }
 
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
-            )
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
-                );
+            ) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
+                };
+            }
 
             const queue = app.music.getQueue(msg);
-            if (!queue)
-                return msg.reply(
-                    `${Emojis.DANGER} | Nothing is being played right now!`
-                );
+            if (!queue) {
+                return {
+                    content: `${Emojis.DANGER} | Nothing is being played right now!`,
+                };
+            }
 
             const options = ["track", "queue", "none"];
             if (args[0]) {
-                if (!options.includes(args[0]))
-                    return msg.reply(
-                        `${
+                if (!options.includes(args[0])) {
+                    return {
+                        content: `${
                             Emojis.DANGER
                         } | Invalid option! Available options: ${options
                             .map((x) => `\`${x}\``)
-                            .join(", ")}`
-                    );
+                            .join(", ")}`,
+                    };
+                }
 
                 switch (args[0]) {
                     case "track":
@@ -74,15 +78,15 @@ const fn: AppFile = (app) => {
                 }
             }
 
-            msg.reply(
-                `${Emojis.MUSIC} | Currently Looping: **${
+            return {
+                content: `${Emojis.MUSIC} | Currently Looping: **${
                     queue.repeatMode
                         ? "track"
                         : queue.loopMode
                         ? "queue"
                         : "none"
-                }**!`
-            );
+                }**!`,
+            };
         }
     );
 

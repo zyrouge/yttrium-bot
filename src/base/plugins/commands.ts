@@ -36,12 +36,16 @@ export interface Command {
     args: OptionDefinition[];
 }
 
+export type CommandRunMessageReturn = Parameters<
+    typeof Discord.TextChannel.prototype.send
+>[1];
+
 export type CommandRun = (options: {
     msg: Discord.Message;
     contents: string[];
     args: ArgsParserReturn;
     prefix: string;
-}) => any;
+}) => Promise<CommandRunMessageReturn | void>;
 
 export class Command {
     run: CommandRun;

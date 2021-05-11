@@ -20,43 +20,47 @@ const fn: AppFile = (app) => {
             ],
         },
         async ({ msg, args }) => {
-            if (!msg.member?.voice.channel)
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
-                );
+            if (!msg.member?.voice.channel) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
+                };
+            }
 
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
-            )
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
-                );
+            ) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
+                };
+            }
 
             const queue = app.music.getQueue(msg);
-            if (!queue)
-                return msg.reply(
-                    `${Emojis.DANGER} | Nothing is being played right now!`
-                );
+            if (!queue) {
+                return {
+                    content: `${Emojis.DANGER} | Nothing is being played right now!`,
+                };
+            }
 
-            if (!("index" in args))
-                return msg.reply(
-                    `${Emojis.DANGER} | Provide a song index to remove!`
-                );
+            if (!("index" in args)) {
+                return {
+                    content: `${Emojis.DANGER} | Provide a song index to remove!`,
+                };
+            }
 
             const index =
                 typeof args.index === "number" && !isNaN(args.index)
                     ? args.index - 1
                     : -1;
             if (index < 0 || !queue.tracks[index])
-                return msg.reply(
-                    `${Emojis.DANGER} | Invalid song index was provided!`
-                );
+                return {
+                    content: `${Emojis.DANGER} | Invalid song index was provided!`,
+                };
 
             const removed = app.music.remove(msg, index);
-            msg.reply(
-                `${Emojis.SUCCESS} | Removed **${removed.title}** from the queue!`
-            );
+            return {
+                content: `${Emojis.SUCCESS} | Removed **${removed.title}** from the queue!`,
+            };
         }
     );
 

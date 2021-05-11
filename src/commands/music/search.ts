@@ -20,23 +20,26 @@ const fn: AppFile = (app) => {
             ],
         },
         async ({ msg, args }) => {
-            if (!msg.member?.voice.channel)
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
-                );
+            if (!msg.member?.voice.channel) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
+                };
+            }
 
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
-            )
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
-                );
+            ) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
+                };
+            }
 
-            if (!args.term)
-                return msg.reply(
-                    `${Emojis.DANGER} | Provide some search terms to fetch results!`
-                );
+            if (!args.term) {
+                return {
+                    content: `${Emojis.DANGER} | Provide some search terms to fetch results!`,
+                };
+            }
 
             msg.react(Emojis.SEARCH).catch(() => {});
             app.music.play(msg, args.term.join(" "));

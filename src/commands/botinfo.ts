@@ -13,7 +13,7 @@ const fn: AppFile = (app) => {
             category: "misc",
             args: [],
         },
-        async ({ msg }) => {
+        async () => {
             const embed = new MessageEmbed();
 
             embed.setTitle(`${Emojis.INFO} | Information`);
@@ -52,7 +52,7 @@ const fn: AppFile = (app) => {
             embed.setColor(Colors.WHITE);
             embed.setTimestamp();
 
-            msg.reply({ embed });
+            return { embed };
         }
     );
 

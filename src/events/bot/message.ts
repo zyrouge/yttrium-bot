@@ -8,7 +8,7 @@ import {
 } from "@/base/plugins/commands";
 
 const fn: AppFile = (app) => {
-    app.bot.on("message", (msg: Discord.Message) => {
+    app.bot.on("message", async (msg: Discord.Message) => {
         if (msg.author.bot || !msg.guild || !app.bot.user) return;
 
         let prefix: string | undefined, content: string | undefined;
@@ -38,12 +38,14 @@ const fn: AppFile = (app) => {
         }
 
         try {
-            command.run({
+            const res = await command.run({
                 msg,
                 prefix,
                 contents,
                 args,
             });
+
+            if (res) msg.reply(res);
         } catch (err) {
             return msg.reply(
                 `${Emojis.DANGER} | Something went wrong while running the command! (${err})`
