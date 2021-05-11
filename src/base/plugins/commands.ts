@@ -8,10 +8,10 @@ export type ArgsParserReturn = ReturnType<typeof ArgsParser>;
 export const ArgsErrorFormatter = (err: any) => {
     switch (err.name) {
         case "UNKNOWN_OPTION":
-            return `Invalid command option (\`${err.optionName}\`) was passed!`;
+            return `Unknown command option (\`${err.optionName}\`) was passed!`;
 
         case "UNKNOWN_VALUE":
-            return `Invalid command value (\`${err.value}\`) was passed!`;
+            return `Unknown command value (\`${err.value}\`) was passed!`;
 
         case "ALREADY_SET":
             return `Duplicate command option (\`${err.optionName}\`${
