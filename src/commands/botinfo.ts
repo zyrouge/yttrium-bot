@@ -18,6 +18,7 @@ const fn: AppFile = (app) => {
 
             embed.setTitle(`${Emojis.INFO} | Information`);
 
+            const sha = await Functions.getSHA();
             embed.addField(
                 `${Emojis.BOT} Bot`,
                 [
@@ -25,6 +26,7 @@ const fn: AppFile = (app) => {
                     `**ID**: ${app.bot.user?.id}`,
                     `**Author**: ${Constants.project.author}`,
                     `**Source Code**: [GitHub](${Constants.project.github})`,
+                    `**Commit**: ${sha ? `\`${sha}\`` : "Unknown"}`,
                 ].join("\n")
             );
 

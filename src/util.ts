@@ -1,7 +1,9 @@
 import axios from "axios";
 import util from "util";
+import cp from "child_process";
 
 const pkgJson = require("../package.json");
+const exec = util.promisify(cp.exec);
 
 export const Emojis = {
     TIMER: "⌛",
@@ -85,6 +87,16 @@ export const Functions = {
         if (secs) human.push(`${secs}s`);
         return human.join(" ");
     },
+    async getSHA() {
+        if (Constants.project.sha) return Constants.project.sha;
+        if (Constants.project.github === "Unknown") return null;
+        const { stdout } = await exec(
+            `git ls-remote ${Constants.project.github}.git refs/heads/main`
+        );
+        const sha = (Constants.project.sha =
+            stdout.match(/\w+/)?.[0] || "Unknown");
+        return sha;
+    },
 };
 
 export const Constants = {
@@ -94,6 +106,7 @@ export const Constants = {
         github: (pkgJson.repository?.url?.replace(/^(git\+)|(.git)$/g, "") ||
             "Unknown") as string,
         author: (pkgJson.author || "Unknown") as string,
+        sha: null as string | null,
     },
     http: {
         UserAgent:
