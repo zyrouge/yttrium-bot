@@ -18,6 +18,7 @@ const fn: AppFile = (app) => {
                 {
                     name: "id",
                     type: Number,
+                    defaultValue: null,
                 },
                 {
                     name: "term",
