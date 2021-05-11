@@ -61,7 +61,7 @@ export const Functions = {
     shuffle: <T>(arr: T[]): T[] => arr.sort((a, b) => Math.random() - 0.5),
     sleep: util.promisify(setTimeout),
     getHostFromURL: (url: string) =>
-        url.match(/https?:\/\/(.*)\/?/)?.[1] || url,
+        url.match(/https?:\/\/(.*)/)?.[1].split("/")[0] || url,
     parseMs: (ms: number) => {
         let secs = ms / 1000;
 

@@ -77,7 +77,7 @@ const fn: AppFile = (app) => {
                         value: [
                             `**Score**: ${x.score}`,
                             `**Type**: ${Functions.capitalize(x.series)}`,
-                            `**Run**: ${x.run}`,
+                            `**Aired**: ${x.run}`,
                             `**Link**: [${Functions.getHostFromURL(
                                 Constants.urls.animeList.base
                             )}](${x.url})`,

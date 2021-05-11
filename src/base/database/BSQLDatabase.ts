@@ -7,12 +7,15 @@ export interface SchemaParserAttribute {
     constraints?: string[];
 }
 
-export const SchemaParser = (
-    schema: Record<string, string | SchemaParserAttribute> = {}
-) => {
+export interface SchemaParserRawSchema {
+    attributes: Record<string, string | SchemaParserAttribute>;
+    others?: string[];
+}
+
+export const SchemaParser = (schema: SchemaParserRawSchema) => {
     const keys: string[] = [];
 
-    Object.entries(schema).forEach(([key, opts]) => {
+    Object.entries(schema.attributes).forEach(([key, opts]) => {
         let type: string,
             constraints: string[] = [];
 
@@ -27,13 +30,15 @@ export const SchemaParser = (
         keys.push(res);
     });
 
+    if (schema.others) keys.push(...schema.others);
+
     return keys.join(", ");
 };
 
 export interface BSQLDatabaseOptions {
     path: string;
     name: string;
-    schema: Record<string, string | SchemaParserAttribute>;
+    schema: SchemaParserRawSchema;
     sqlOptions?: bsql.Options;
 }
 

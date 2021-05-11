@@ -5,9 +5,9 @@ import { Emojis } from "@/util";
 const fn: AppFile = (app) => {
     const command = new Command(
         {
-            name: "search",
+            name: "ytsearch",
             description: "Searches and plays/adds a song to the queue",
-            aliases: ["se"],
+            aliases: ["yts", "songsearch"],
             category: "music",
             args: [
                 {
