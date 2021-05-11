@@ -20,24 +20,27 @@ const fn: AppFile = (app) => {
             ],
         },
         async ({ msg, args }) => {
-            if (!msg.member?.voice.channel)
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
-                );
+            if (!msg.member?.voice.channel) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
+                };
+            }
 
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
-            )
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
-                );
+            ) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
+                };
+            }
 
             const queue = app.music.getQueue(msg);
-            if (!queue)
-                return msg.reply(
-                    `${Emojis.DANGER} | Nothing is being played right now!`
-                );
+            if (!queue) {
+                return {
+                    content: `${Emojis.DANGER} | Nothing is being played right now!`,
+                };
+            }
 
             if ("volume" in args) {
                 const vol =
@@ -45,15 +48,18 @@ const fn: AppFile = (app) => {
                         ? args.volume
                         : -1;
 
-                if (vol < 0 || vol > 100)
-                    return msg.reply(
-                        `${Emojis.DANGER} | Invalid volume was provided. Volume must be between 1 and 100!`
-                    );
+                if (vol < 0 || vol > 100) {
+                    return {
+                        content: `${Emojis.DANGER} | Invalid volume was provided. Volume must be between 1 and 100!`,
+                    };
+                }
 
                 app.music.setVolume(msg, vol);
             }
 
-            msg.reply(`${Emojis.MUSIC} | Volume: \`${queue.volume}%\``);
+            return {
+                content: `${Emojis.MUSIC} | Volume: \`${queue.volume}%\``,
+            };
         }
     );
 

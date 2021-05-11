@@ -1,11 +1,6 @@
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
-import {
-    ArgsParser,
-    ArgsParserReturn,
-    ArgsErrorFormatter,
-    Command,
-} from "@/base/plugins/commands";
+import { Command } from "@/base/plugins/commands";
 import {
     getAnimes,
     TopAnimeTypes,
@@ -39,19 +34,21 @@ const fn: AppFile = (app) => {
         async ({ msg, args }) => {
             try {
                 const type = args.type?.toLowerCase() as TopAnimeTypesType;
-                if (type && !TopAnimeTypes.includes(type))
-                    return msg.reply(
-                        `${
+                if (type && !TopAnimeTypes.includes(type)) {
+                    return {
+                        content: `${
                             Emojis.DANGER
                         } | Invalid anime list category! Available categories: ${TopAnimeTypes.map(
                             (x) => `\`${x}\``
-                        ).join(", ")}`
-                    );
+                        ).join(", ")}`,
+                    };
+                }
 
                 msg.react(Emojis.TIMER).catch(() => {});
                 const { animes: all } = await getAnimes({
                     type: !!type && type,
                 });
+
                 const embed = new MessageEmbed();
                 embed.setTitle(
                     `${
@@ -66,10 +63,13 @@ const fn: AppFile = (app) => {
                 const itemsPerPage = 8;
                 const startIndex = page * itemsPerPage;
                 const animes = all.slice(startIndex, startIndex + itemsPerPage);
-                if (!animes.length)
-                    return msg.reply(
-                        `${Emojis.SAD} | Page **${page + 1}** is empty!`
-                    );
+                if (!animes.length) {
+                    return {
+                        content: `${Emojis.SAD} | Page **${
+                            page + 1
+                        }** is empty!`,
+                    };
+                }
 
                 embed.addFields(
                     ...animes.map((x) => ({
@@ -93,11 +93,11 @@ const fn: AppFile = (app) => {
                     )} | Source: ${Constants.urls.animeList.base}`
                 );
 
-                msg.reply({ embed });
+                return { embed };
             } catch (err) {
-                return msg.reply(
-                    `${Emojis.DANGER} | Something went wrong! (${err})`
-                );
+                return {
+                    content: `${Emojis.DANGER} | Something went wrong! (${err})`,
+                };
             }
         }
     );

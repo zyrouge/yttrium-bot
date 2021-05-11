@@ -27,24 +27,27 @@ const fn: AppFile = (app) => {
             ],
         },
         async ({ msg, args, prefix }) => {
-            if (!msg.member?.voice.channel)
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`
-                );
+            if (!msg.member?.voice.channel) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
+                };
+            }
 
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
-            )
-                return msg.reply(
-                    `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`
-                );
+            ) {
+                return {
+                    content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
+                };
+            }
 
             const queue = app.music.getQueue(msg);
-            if (!queue)
-                return msg.reply(
-                    `${Emojis.DANGER} | Nothing is being played right now!`
-                );
+            if (!queue) {
+                return {
+                    content: `${Emojis.DANGER} | Nothing is being played right now!`,
+                };
+            }
 
             const invalidFilters: string[] = [];
             if (args.filter) {
@@ -99,7 +102,7 @@ const fn: AppFile = (app) => {
                 `Use \`${prefix}${command.name} [filter1, filter2, ...]\` to add or remove filters!`
             );
 
-            msg.reply({ embed });
+            return { embed };
         }
     );
 

@@ -28,10 +28,11 @@ const fn: AppFile = (app) => {
             try {
                 const respTags: string[] = [];
 
-                if (!args.code)
-                    return msg.reply(
-                        `${Emojis.DANGER} | Provide some search terms to fetch results!`
-                    );
+                if (!args.code) {
+                    return {
+                        content: `${Emojis.DANGER} | Provide some search terms to fetch results!`,
+                    };
+                }
 
                 let evaled = eval(args.code.join(" "));
                 if (evaled?.then && typeof evaled.then === "function") {
@@ -42,23 +43,23 @@ const fn: AppFile = (app) => {
                 if (typeof evaled !== "string") evaled = util.inspect(evaled);
                 evaled = Functions.clean(evaled);
 
-                msg.reply(
-                    `${Emojis.SUCCESS} | **Success** ${respTags
+                return {
+                    content: `${Emojis.SUCCESS} | **Success** ${respTags
                         .map((x) => `(${x})`)
                         .join(" ")}\n\`\`\`xl\n${Functions.shorten(
                         evaled,
                         1900
-                    )}\`\`\``
-                );
+                    )}\`\`\``,
+                };
             } catch (err) {
-                return msg.reply(
-                    `${
+                return {
+                    content: `${
                         Emojis.DANGER
                     } | **Error**\n\`\`\`xl\n${Functions.shorten(
                         err.toString(),
                         1000
-                    )}\`\`\``
-                );
+                    )}\`\`\``,
+                };
             }
         }
     );

@@ -1,5 +1,4 @@
-import { Message } from "discord.js";
-import { Client as GeniusClient } from "genius-lyrics";
+import { Client as GeniusClient, Song } from "genius-lyrics";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
 import { Constants, Emojis, Functions } from "@/util";
@@ -30,27 +29,35 @@ const fn: AppFile = (app) => {
             ],
         },
         async ({ msg, args }) => {
-            if (!args.terms)
-                return msg.reply(
-                    `${Emojis.DANGER} | Provide some arguments to resolve songs!`
-                );
+            if (!args.terms) {
+                return {
+                    content: `${Emojis.DANGER} | Provide some arguments to resolve songs!`,
+                };
+            }
 
-            let nmsg: Message | undefined;
             try {
+                msg.react(Emojis.SEARCH).catch(() => {});
+
                 const terms = args.terms.join(" ");
-                const nmsg = await msg.reply(
-                    `${Emojis.SEARCH} | Searching lyrics for \`${terms}\`...`
-                );
+                let song: Song | undefined;
+                try {
+                    song = (await genius.songs.search(terms))?.[0];
+                } catch (err) {}
+                if (!song) {
+                    return {
+                        content: `${Emojis.SAD} | Couldn't find the song!`,
+                    };
+                }
 
-                const song = (await genius.songs.search(terms))?.[0];
-                if (!song)
-                    return nmsg.edit(`${Emojis.SAD} | Couldn't find the song!`);
-
-                const lyrics = await song.lyrics();
-                if (!lyrics?.length)
-                    return nmsg.edit(
-                        `${Emojis.SAD} | Couldn't find lyrics of the song!`
-                    );
+                let lyrics: string | undefined;
+                try {
+                    lyrics = await song.lyrics();
+                } catch (err) {}
+                if (!lyrics?.length) {
+                    return {
+                        content: `${Emojis.SAD} | Couldn't find lyrics of the song!`,
+                    };
+                }
 
                 const maxLength = 1500;
                 const pages: string[] = [
@@ -72,17 +79,16 @@ const fn: AppFile = (app) => {
                         pages[i] += `${line}\n`;
                     });
 
-                nmsg.delete().catch(() => {});
                 for (const page of pages) {
                     msg.reply(page);
                     await Functions.sleep(250);
                 }
             } catch (err) {
-                const content = `${Emojis.DANGER} | Something went wrong! (${
-                    err?.message ? err.message : err.toString()
-                })`;
-                if (nmsg && nmsg.editable) return nmsg.edit(content);
-                return msg.reply(content);
+                return {
+                    content: `${Emojis.DANGER} | Something went wrong! (${
+                        err?.message ? err.message : err.toString()
+                    })`,
+                };
             }
         }
     );

@@ -15,7 +15,7 @@ const fn: AppFile = (app) => {
             category: "misc",
             args: [], // todo
         },
-        async ({ msg, args }) => {
+        async ({ args }) => {
             const allCommands = [...app.commands.commands.values()];
 
             const page = args[0] && !isNaN(args[0] as any) ? +args[0] - 1 : 0,
@@ -27,12 +27,13 @@ const fn: AppFile = (app) => {
                 startIndex + itemsPerPage
             );
 
-            if (!cmds.length)
-                return msg.reply(
-                    `${Emojis.SAD} | Page **${
+            if (!cmds.length) {
+                return {
+                    content: `${Emojis.SAD} | Page **${
                         page + 1
-                    }** of the commands is empty!`
-                );
+                    }** of the commands is empty!`,
+                };
+            }
 
             const embed = new MessageEmbed();
 
@@ -65,7 +66,7 @@ const fn: AppFile = (app) => {
                 } | Author: ${pkjJson?.author || "-"}`
             );
 
-            msg.reply({ embed });
+            return { embed };
         }
     );
 
