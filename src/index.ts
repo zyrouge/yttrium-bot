@@ -15,7 +15,11 @@ const start = async () => {
         botOptions: {
             token: process.env.TOKEN,
             clientOptions: {
-                intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+                intents: [
+                    Intents.FLAGS.GUILDS,
+                    Intents.FLAGS.GUILD_MESSAGES,
+                    Intents.FLAGS.GUILD_MEMBERS,
+                ],
                 allowedMentions: {
                     parse: ["roles", "users"],
                     repliedUser: false,
