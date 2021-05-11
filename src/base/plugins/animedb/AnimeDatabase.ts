@@ -260,13 +260,21 @@ export const searchAnime = (term: string) => {
     if (!data?.length) return null;
 
     const fuse = new Fuse(data, {
-        keys: ["title", "synonyms", "tags"],
+        keys: [
+            {
+                name: "title",
+                weight: 2,
+            },
+            "synonyms",
+            {
+                name: "tags",
+                weight: 0.7,
+            },
+        ],
         isCaseSensitive: true,
-        includeScore: true,
     });
     return fuse
         .search(term)
-        .sort((a, b) => a.score! - b.score!)
         .slice(0, 10)
         .map((x) => ({ id: x.item.id, title: x.item.title }));
 };
