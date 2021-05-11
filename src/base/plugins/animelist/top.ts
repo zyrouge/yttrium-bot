@@ -38,14 +38,13 @@ export interface TopAnimeEntity {
     run: string;
 }
 
-export let ready = false;
 export let lastUpdated: number | undefined = undefined;
 export let TopAnimeCache:
     | Record<TopAnimeTypesType | "all", TopAnimeEntity[]>
     | undefined = undefined;
 
 export const getAnimes = async (options: TopAnimesOptions) => {
-    if (!ready || !TopAnimeCache)
+    if (!TopAnimeCache)
         throw new Error("Anime list is not ready yet");
 
     return TopAnimeCache[options.type || "all"];
