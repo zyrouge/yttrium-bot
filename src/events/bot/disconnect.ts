@@ -1,9 +1,10 @@
 import { AppFile } from "@/base/app";
+import { Logger } from "@/util";
 
 const fn: AppFile = (app) => {
     app.bot.on("disconnect", () => {
-        app.logger.info(`Disconnected from Discord API!`);
+        Logger.info(`Disconnected from Discord API!`);
     });
-}
+};
 
 export default fn;

@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "fs-extra";
 import path from "path";
 import bsql from "better-sqlite3";
 
@@ -7,12 +7,15 @@ export interface SchemaParserAttribute {
     constraints?: string[];
 }
 
-export const SchemaParser = (
-    schema: Record<string, string | SchemaParserAttribute> = {}
-) => {
+export interface SchemaParserRawSchema {
+    attributes: Record<string, string | SchemaParserAttribute>;
+    others?: string[];
+}
+
+export const SchemaParser = (schema: SchemaParserRawSchema) => {
     const keys: string[] = [];
 
-    Object.entries(schema).forEach(([key, opts]) => {
+    Object.entries(schema.attributes).forEach(([key, opts]) => {
         let type: string,
             constraints: string[] = [];
 
@@ -27,30 +30,32 @@ export const SchemaParser = (
         keys.push(res);
     });
 
+    if (schema.others) keys.push(...schema.others);
+
     return keys.join(", ");
 };
 
-export interface DatabaseOptions {
+export interface BSQLDatabaseOptions {
     path: string;
     name: string;
-    schema: Record<string, string | SchemaParserAttribute>;
+    schema: SchemaParserRawSchema;
     sqlOptions?: bsql.Options;
 }
 
-export default class Database {
+export class BSQLDatabase {
     path: string;
     name: string;
     schema: string;
     sql: bsql.Database;
     ready: boolean;
 
-    constructor(options: DatabaseOptions) {
+    constructor(options: BSQLDatabaseOptions) {
         if (!options.path)
             throw new Error("Missing 'options.path' in 'Database'");
         this.path = options.path;
 
         const dir = path.dirname(this.path);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        fs.ensureDirSync(dir);
 
         if (!options.name)
             throw new Error("Missing 'options.name' in 'Database'");

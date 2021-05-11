@@ -1,9 +1,11 @@
-import pino from "pino";
 import path from "path";
 import fs from "fs-extra";
 import { Player, PlayerOptions } from "discord-player";
 import { Bot, BotOptions } from "@/base/bot";
 import { CommandManager } from "@/base/plugins/commands";
+import { FetchAndUpdateDatabase as AnimeDB } from "@/base/plugins/animedb/AnimeDatabase";
+import { StartPreScheduledJobs } from "./plugins/cron/Runner";
+import { Logger } from "@/util";
 
 export type AppFile = (app: App) => any;
 
@@ -14,7 +16,6 @@ export interface AppOptions {
 
 export class App {
     options: AppOptions;
-    logger: pino.Logger;
     bot: Bot;
     commands: CommandManager;
     music: Player;
@@ -22,7 +23,6 @@ export class App {
 
     constructor(options: AppOptions) {
         this.options = options;
-        this.logger = pino();
         this.bot = new Bot(options.botOptions);
         this.commands = new CommandManager();
         this.music = new Player(this.bot, options.musicOptions);
@@ -42,9 +42,9 @@ export class App {
     async file(dir: string) {
         const file: { default: AppFile } | undefined = require(dir);
         if (typeof file?.default !== "function")
-            return this.logger.error(`Failed to handle ${dir}!`);
+            return Logger.error(`Failed to handle ${dir}!`);
         await file.default(this);
-        this.logger.info(`Loaded ${dir} successfully!`);
+        Logger.info(`Loaded ${dir} successfully!`);
     }
 
     async ready() {

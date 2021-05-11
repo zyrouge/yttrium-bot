@@ -45,7 +45,7 @@ const fn: AppFile = (app) => {
                 }
 
                 msg.react(Emojis.TIMER).catch(() => {});
-                const { animes: all } = await getAnimes({
+                const all = await getAnimes({
                     type: !!type && type,
                 });
 
@@ -77,7 +77,7 @@ const fn: AppFile = (app) => {
                         value: [
                             `**Score**: ${x.score}`,
                             `**Type**: ${Functions.capitalize(x.series)}`,
-                            `**Run**: ${x.run}`,
+                            `**Aired**: ${x.run}`,
                             `**Link**: [${Functions.getHostFromURL(
                                 Constants.urls.animeList.base
                             )}](${x.url})`,
