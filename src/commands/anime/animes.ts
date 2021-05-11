@@ -33,7 +33,13 @@ const fn: AppFile = (app) => {
             try {
                 msg.react(Emojis.TIMER).catch(() => {});
 
-                if ("id" in args) {
+                if (typeof args.id === "number") {
+                    if (isNaN(args.id)) {
+                        return {
+                            content: `${Emojis.SAD} | Invalid anime ID was provided!`,
+                        };
+                    }
+
                     const anime = getAnimeByID(args.id);
                     if (!anime) {
                         return {
