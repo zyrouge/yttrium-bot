@@ -1,6 +1,8 @@
 import axios from "axios";
 import util from "util";
 
+const pkgJson = require("../package.json");
+
 export const Emojis = {
     TIMER: "⌛",
     PING_PONG: "🏓",
@@ -20,6 +22,8 @@ export const Emojis = {
     SOUND: "🔊",
     PAGE: "📄",
     WHITE_FLOWER: "💮",
+    SYSTEM: "💻",
+    BOT: "🤖",
 };
 
 export const Colors = {
@@ -54,9 +58,43 @@ export const Functions = {
     sleep: util.promisify(setTimeout),
     getHostFromURL: (url: string) =>
         url.match(/https?:\/\/(.*)\/?/)?.[1] || url,
+    parseMs: (ms: number) => {
+        let secs = ms / 1000;
+
+        const days = secs / (24 * 60 * 60);
+        secs %= 24 * 60 * 60;
+
+        const hours = secs / (60 * 60);
+        secs %= 60 * 60;
+
+        const mins = secs / 60;
+        secs %= 60;
+
+        return {
+            days: Math.trunc(days),
+            hours: Math.trunc(hours),
+            mins: Math.trunc(mins),
+            secs: Math.trunc(secs),
+        };
+    },
+    humanizeDuration: ({ days, hours, mins, secs }: any) => {
+        const human = [];
+        if (days) human.push(`${days}d`);
+        if (hours) human.push(`${hours}h`);
+        if (mins) human.push(`${mins}m`);
+        if (secs) human.push(`${secs}s`);
+        return human.join(" ");
+    },
 };
 
 export const Constants = {
+    project: {
+        codeName: pkgJson.name as string,
+        version: pkgJson.version as string,
+        github: (pkgJson.repository?.url?.replace(/^(git\+)|(.git)$/g, "") ||
+            "Unknown") as string,
+        author: (pkgJson.author || "Unknown") as string,
+    },
     http: {
         UserAgent:
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36",
