@@ -241,18 +241,26 @@ export const searchAnime = (term: string) => {
     const data: {
         id: number;
         title: string;
+        synonyms: string[];
+        tags: string[];
     }[] = Database.sql
         .prepare(
-            `SELECT id, title FROM ${Database.name} WHERE` +
+            `SELECT id, title, synonyms, tags FROM ${Database.name} WHERE` +
                 " LOWER(title) LIKE ?" +
                 ` OR REPLACE(synonyms, '${DataSplitter}', '') LIKE ?` +
                 ` OR REPLACE(tags, '${DataSplitter}', '') LIKE ?`
         )
-        .all(sqlterm, sqlterm, sqlterm);
+        .all(sqlterm, sqlterm, sqlterm)
+        .map((x) =>
+            Object.assign(x, {
+                synonyms: x.synonyms.split(DataSplitter),
+                tags: x.tags.split(DataSplitter),
+            })
+        );
     if (!data?.length) return null;
 
     const fuse = new Fuse(data, {
-        keys: ["title"],
+        keys: ["title", "synonyms", "tags"],
         isCaseSensitive: true,
         includeScore: true,
     });
@@ -260,5 +268,5 @@ export const searchAnime = (term: string) => {
         .search(term)
         .sort((a, b) => a.score! - b.score!)
         .slice(0, 10)
-        .map((x) => x.item);
+        .map((x) => ({ id: x.item.id, title: x.item.title }));
 };
