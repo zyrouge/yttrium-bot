@@ -1,9 +1,12 @@
-import axios from "axios";
+import path from "path";
 import util from "util";
 import cp from "child_process";
+import pino from "pino";
 
 const pkgJson = require("../package.json");
 const exec = util.promisify(cp.exec);
+
+export const Logger = pino();
 
 export const Emojis = {
     TIMER: "⌛",
@@ -56,7 +59,6 @@ export const Functions = {
             .map((x) => `${x[0].toUpperCase()}${x.slice(1)}`)
             .join(" "),
     shuffle: <T>(arr: T[]): T[] => arr.sort((a, b) => Math.random() - 0.5),
-    http: axios,
     sleep: util.promisify(setTimeout),
     getHostFromURL: (url: string) =>
         url.match(/https?:\/\/(.*)\/?/)?.[1] || url,
@@ -100,6 +102,12 @@ export const Functions = {
 };
 
 export const Constants = {
+    paths: {
+        root: path.resolve(__dirname, ".."),
+        get data() {
+            return path.join(this.root, "data");
+        },
+    },
     project: {
         codeName: pkgJson.name as string,
         version: pkgJson.version as string,
@@ -126,5 +134,13 @@ export const Constants = {
                 return out;
             },
         },
+        animeOfflineDatabase: {
+            base: "https://github.com/manami-project/anime-offline-database",
+            dataJson:
+                "https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json",
+        },
+    },
+    cron: {
+        every6hours: "0 */6 * * *",
     },
 };

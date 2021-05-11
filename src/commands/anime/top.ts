@@ -45,7 +45,7 @@ const fn: AppFile = (app) => {
                 }
 
                 msg.react(Emojis.TIMER).catch(() => {});
-                const { animes: all } = await getAnimes({
+                const all = await getAnimes({
                     type: !!type && type,
                 });
 

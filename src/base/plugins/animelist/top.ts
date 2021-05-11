@@ -1,6 +1,16 @@
+import path from "path";
+import fs from "fs-extra";
 import axios from "axios";
 import cheerio from "cheerio";
-import { Constants } from "@/util";
+import { getCacheInfo, updateCacheInfo } from "@/base/database/CacheInfoFile";
+import { Constants, Functions, Logger } from "@/util";
+
+export const DataDir = path.join(Constants.paths.data, "animelist", "top");
+export const DatabasePath = path.join(DataDir, "top.json");
+export const CacheInfoPath = path.join(DataDir, "cacheInfo.json");
+export const MaxAliveTime = 21600000;
+
+fs.ensureDirSync(DataDir);
 
 export const TopAnimeTypes = [
     "airing",
@@ -28,29 +38,17 @@ export interface TopAnimeEntity {
     run: string;
 }
 
-// 6 hours 21600
-export const MaxAliveTime = 10 * 1000;
-
-export const TopAnimeCache: Map<
-    TopAnimeTypesType | "all",
-    {
-        animes: TopAnimeEntity[];
-        lastUpdated: number;
-    }
-> = new Map();
+export let ready = false;
+export let lastUpdated: number | undefined = undefined;
+export let TopAnimeCache:
+    | Record<TopAnimeTypesType | "all", TopAnimeEntity[]>
+    | undefined = undefined;
 
 export const getAnimes = async (options: TopAnimesOptions) => {
-    let data = TopAnimeCache.get(options.type || "all");
-    if (data && Date.now() > data.lastUpdated + MaxAliveTime) data = undefined;
-    if (!data) {
-        const animes = await TopAnimesFetcher(options);
-        data = {
-            animes,
-            lastUpdated: Date.now(),
-        };
-        TopAnimeCache.set(options.type || "all", data);
-    }
-    return data;
+    if (!ready || !TopAnimeCache)
+        throw new Error("Anime list is not ready yet");
+
+    return TopAnimeCache[options.type || "all"];
 };
 
 export const TopAnimesFetcher = async (options: TopAnimesOptions) => {
@@ -92,4 +90,46 @@ export const TopAnimesFetcher = async (options: TopAnimesOptions) => {
     });
 
     return animes;
+};
+
+export const FetchAndUpdateDatabase = async () => {
+    try {
+        const cacheInfo = await getCacheInfo(CacheInfoPath);
+        if (cacheInfo) {
+            const expires = cacheInfo.lastUpdated + MaxAliveTime;
+            if (expires > Date.now())
+                return Logger.info(
+                    `Skipping Anime list update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
+                        Functions.parseMs(expires - Date.now())
+                    )}`
+                );
+        }
+    } catch (err) {}
+
+    try {
+        Logger.info("Updating Anime list...");
+        // @ts-ignore
+        TopAnimeCache = {};
+
+        for (const type of [undefined, ...TopAnimeTypes]) {
+            const animes = await TopAnimesFetcher({
+                type,
+            });
+
+            // @ts-ignore
+            TopAnimeCache[type || "all"] = animes;
+            await Functions.sleep(5000);
+        }
+
+        await fs.writeFile(
+            DatabasePath,
+            JSON.stringify(TopAnimeCache, null, 4)
+        );
+        Logger.info("Updated Anime list!");
+        await updateCacheInfo(CacheInfoPath, {
+            lastUpdated: Date.now(),
+        });
+    } catch (err) {
+        Logger.error(`Failed to update Anime list! - ${err}`);
+    }
 };

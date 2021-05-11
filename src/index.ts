@@ -5,6 +5,8 @@ import path from "path";
 import { Intents } from "discord.js";
 import { App } from "@/base/app";
 import HttpStreams from "@/base/plugins/music/HttpStreams";
+import { Logger } from "./util";
+import { PostReadyJobs } from "./base/misc/postReady";
 
 const start = async () => {
     dotenv.config();
@@ -19,6 +21,7 @@ const start = async () => {
                     Intents.FLAGS.GUILDS,
                     Intents.FLAGS.GUILD_MESSAGES,
                     Intents.FLAGS.GUILD_MEMBERS,
+                    Intents.FLAGS.GUILD_VOICE_STATES,
                 ],
                 allowedMentions: {
                     parse: ["roles", "users"],
@@ -46,7 +49,9 @@ const start = async () => {
     app.music.use("URL_STREAM", HttpStreams);
 
     await app.ready();
-    app.logger.info(`Application loaded successfully!`);
+    Logger.info(`Application loaded successfully!`);
+
+    PostReadyJobs();
 };
 
 start();
