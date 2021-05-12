@@ -28,8 +28,8 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
-            const track = app.music.nowPlaying(msg);
+            const queue = app.plugins.music.getQueue(msg);
+            const track = app.plugins.music.nowPlaying(msg);
             if (!queue || !track) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
@@ -47,7 +47,7 @@ const fn: AppFile = (app) => {
             );
             embed.addField(
                 "** **",
-                app.music.createProgressBar(msg, { timecodes: true })
+                app.plugins.music.createProgressBar(msg, { timecodes: true })
             );
             embed.setThumbnail(track.thumbnail);
             embed.setTimestamp();
@@ -66,7 +66,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

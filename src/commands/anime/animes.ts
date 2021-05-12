@@ -1,10 +1,6 @@
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import {
-    getAnimeByID,
-    searchAnime,
-} from "@/base/plugins/animedb/AnimeDatabase";
 import { Emojis, Constants, Functions, Colors } from "@/util";
 
 const fn: AppFile = (app) => {
@@ -19,6 +15,8 @@ const fn: AppFile = (app) => {
                     name: "id",
                     type: Number,
                     defaultValue: null,
+                    helpDesc: "ID of the anime",
+                    optional: true,
                 },
                 {
                     name: "term",
@@ -26,6 +24,9 @@ const fn: AppFile = (app) => {
                     type: String,
                     multiple: true,
                     defaultOption: true,
+                    helpDesc: "Keywords of the anime",
+                    helpVal: "anime",
+                    optional: true,
                 },
             ],
         },
@@ -40,7 +41,7 @@ const fn: AppFile = (app) => {
                         };
                     }
 
-                    const anime = getAnimeByID(args.id);
+                    const anime = app.plugins.animedb.getAnimeByID(args.id);
                     if (!anime) {
                         return {
                             content: `${Emojis.SAD} | Could not get anime with ID **${args.id}**!`,
@@ -98,7 +99,7 @@ const fn: AppFile = (app) => {
                     };
                 }
 
-                const animes = searchAnime(terms);
+                const animes = app.plugins.animedb.searchAnime(terms);
                 if (!animes) {
                     return {
                         content: `${Emojis.SAD} | No results were found for **${terms}**!`,
@@ -117,7 +118,7 @@ const fn: AppFile = (app) => {
                 embed.setColor(Colors.YELLOW);
                 embed.setTimestamp();
                 embed.setFooter(
-                    `Use ${prefix}${command.name} --id <id> to view the anime`
+                    `Use \`${prefix}${command.name} --id <id>\` to view the anime`
                 );
 
                 return { embed };
@@ -129,7 +130,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

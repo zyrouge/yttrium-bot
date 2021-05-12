@@ -25,6 +25,9 @@ const fn: AppFile = (app) => {
                     type: String,
                     multiple: true,
                     defaultOption: true,
+                    helpDesc: "Search terms to be resolved",
+                    helpVal: "search",
+                    optional: false,
                 },
             ],
         },
@@ -93,7 +96,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

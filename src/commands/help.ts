@@ -1,10 +1,8 @@
 import path from "path";
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
-import { Command } from "@/base/plugins/commands";
+import { Command, CommandCategories } from "@/base/plugins/commands";
 import { Colors, Emojis, Functions } from "@/util";
-
-const pkjJson = require(path.join(__dirname, "..", "..", "package.json"));
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -13,64 +11,68 @@ const fn: AppFile = (app) => {
             description: "Sends help message",
             aliases: ["cmds", "commands", "hlp"],
             category: "misc",
-            args: [], // todo
+            args: [
+                {
+                    name: "category",
+                    alias: "c",
+                    type: String,
+                    defaultOption: true,
+                    multiple: true,
+                    helpDesc: "Command category",
+                    helpVal: (CommandCategories as any) as string[],
+                    optional: true,
+                },
+            ],
         },
-        async ({ args }) => {
-            const allCommands = [...app.commands.commands.values()];
+        async ({ args, prefix }) => {
+            const embed = new MessageEmbed();
 
-            const page = args[0] && !isNaN(args[0] as any) ? +args[0] - 1 : 0,
-                itemsPerPage = 5;
-            const startIndex = page * itemsPerPage;
+            if (!args.category) {
+                embed.setTitle(`${Emojis.PAGE} | Help`);
+                embed.setDescription(
+                    `Available categories: ${CommandCategories.map(
+                        (x) => `\`${x}\``
+                    ).join(", ")}`
+                );
+                embed.setFooter(
+                    `Use \`${prefix}${command.name} <category>\` to view commands of that category`
+                );
+                embed.setTimestamp();
+                embed.setColor(Colors.WHITE);
 
-            const cmds = allCommands.slice(
-                startIndex,
-                startIndex + itemsPerPage
-            );
+                return { embed };
+            }
 
-            if (!cmds.length) {
+            const cat = args.category.join(" ").toLowerCase();
+            if (!CommandCategories.includes(cat)) {
                 return {
-                    content: `${Emojis.SAD} | Page **${
-                        page + 1
-                    }** of the commands is empty!`,
+                    content: `${Emojis.DANGER} | Invalid command category was provided!`,
                 };
             }
 
-            const embed = new MessageEmbed();
+            const allCommands = [
+                ...app.plugins.commands.commands.values(),
+            ].filter((x) => x.category === cat);
 
-            embed.setTitle(`${Emojis.PAGE} | Commands`);
+            embed.setTitle(
+                `${Emojis.PAGE} | Category: ${Functions.capitalize(cat)}`
+            );
+            embed.setDescription(
+                `Available commands: ${allCommands
+                    .map((x) => `\`${x.name}\``)
+                    .join(", ")}`
+            );
+            embed.setFooter(
+                `Use \`${prefix}<command> --help\` to view about of that category`
+            );
             embed.setTimestamp();
             embed.setColor(Colors.WHITE);
-
-            cmds.forEach((cmd, i) => {
-                embed.addField(
-                    `${i + startIndex + 1}) ${Functions.capitalize(cmd.name)}`,
-                    [
-                        `**Invokers:** ${[cmd.name, ...(cmd.aliases || [])]
-                            .map((x) => `\`${x}\``)
-                            .join(", ")}`,
-                        `**Description:** ${cmd.description}`,
-                        `**Category:** ${Functions.capitalize(cmd.category)}`,
-                    ]
-                        .filter((x) => x)
-                        .join("\n")
-                );
-            });
-
-            embed.setFooter(
-                `Page ${page + 1} of ${Math.ceil(
-                    allCommands.length / itemsPerPage
-                )} | Total commands: ${allCommands.length} | GitHub: ${
-                    (pkjJson?.repository?.url as string)?.match(
-                        /^git\+(.*).git/
-                    )?.[1] || "-"
-                } | Author: ${pkjJson?.author || "-"}`
-            );
 
             return { embed };
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

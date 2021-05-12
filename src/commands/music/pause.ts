@@ -27,18 +27,19 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.plugins.music.getQueue(msg);
             if (!queue) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
             }
 
-            if (app.music.pause(msg)) msg.react(Emojis.PAUSE).catch(() => {});
+            if (app.plugins.music.pause(msg))
+                msg.react(Emojis.PAUSE).catch(() => {});
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

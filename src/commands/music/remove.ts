@@ -16,6 +16,9 @@ const fn: AppFile = (app) => {
                     type: Number,
                     defaultValue: null,
                     defaultOption: true,
+                    helpDesc: "Song index in the queue",
+                    helpVal: "number",
+                    optional: false,
                 },
             ],
         },
@@ -35,7 +38,7 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.plugins.music.getQueue(msg);
             if (!queue) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
@@ -57,14 +60,14 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | Invalid song index was provided!`,
                 };
 
-            const removed = app.music.remove(msg, index);
+            const removed = app.plugins.music.remove(msg, index);
             return {
                 content: `${Emojis.SUCCESS} | Removed **${removed.title}** from the queue!`,
             };
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

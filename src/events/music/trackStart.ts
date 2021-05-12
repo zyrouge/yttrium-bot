@@ -4,9 +4,9 @@ import { AppFile } from "@/base/app";
 import { Colors, Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.music.on("trackStart", async (msg: Message, track: Track) => {
+    app.plugins.music.on("trackStart", async (msg: Message, track: Track) => {
         const cacheKey = `music_msg_${msg.guild!.id}`;
-        const pmsgurl: string = app.cacheData.get(cacheKey);
+        const pmsgurl: string = app.plugins.cacheData.get(cacheKey);
         const pmsg = msg.channel.messages.cache.get(pmsgurl);
         if (pmsg) {
             try {
@@ -27,7 +27,7 @@ const fn: AppFile = (app) => {
             .setColor(Colors.BLUE);
 
         const nmsg = await msg.channel.send({ embed });
-        app.cacheData.set(cacheKey, nmsg.id);
+        app.plugins.cacheData.set(cacheKey, nmsg.id);
     });
 };
 

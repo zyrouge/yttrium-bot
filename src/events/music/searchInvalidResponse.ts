@@ -4,7 +4,7 @@ import { AppFile } from "@/base/app";
 import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.music.on(
+    app.plugins.music.on(
         "searchInvalidResponse",
         (
             msg: Message,

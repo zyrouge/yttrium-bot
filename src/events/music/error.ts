@@ -3,7 +3,7 @@ import { AppFile } from "@/base/app";
 import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.music.on("error", (err: any, msg: Message, ...args: any[]) => {
+    app.plugins.music.on("error", (err: any, msg: Message, ...args: any[]) => {
         switch (err) {
             case "NotPlaying":
                 msg.channel.send(

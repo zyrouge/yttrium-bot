@@ -12,10 +12,13 @@ const fn: AppFile = (app) => {
             args: [
                 {
                     name: "volume",
-                    alias: "vol",
+                    alias: "v",
                     type: Number,
                     defaultOption: true,
                     defaultValue: null,
+                    helpDesc: "Volume to be set",
+                    helpVal: "1-100",
+                    optional: true,
                 },
             ],
         },
@@ -35,7 +38,7 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.plugins.music.getQueue(msg);
             if (!queue) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
@@ -54,7 +57,7 @@ const fn: AppFile = (app) => {
                     };
                 }
 
-                app.music.setVolume(msg, vol);
+                app.plugins.music.setVolume(msg, vol);
             }
 
             return {
@@ -63,7 +66,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

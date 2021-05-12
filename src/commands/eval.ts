@@ -20,6 +20,8 @@ const fn: AppFile = (app) => {
                     type: String,
                     defaultOption: true,
                     multiple: true,
+                    helpDesc: "JavaScript code to be evaled",
+                    optional: false,
                 },
             ],
         },
@@ -64,7 +66,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;
