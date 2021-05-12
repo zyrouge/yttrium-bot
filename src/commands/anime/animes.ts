@@ -112,7 +112,7 @@ const fn: AppFile = (app) => {
                 );
                 embed.setDescription(
                     animes
-                        .map((x) => `ID: \`${x.id}\` **${x.title}**`)
+                        .map((x) => `ID: \`${x.rowid}\` **${x.title}**`)
                         .join("\n")
                 );
                 embed.setColor(Colors.YELLOW);

@@ -138,10 +138,7 @@ export class AnimeDatabase {
                                 tags,
                             } = data.value;
 
-                            const {
-                                changes,
-                                lastInsertRowid,
-                            } = that.sql
+                            const { changes, lastInsertRowid } = that.sql
                                 .prepare(
                                     `INSERT OR IGNORE INTO ${that.mainTableName} (` +
                                         "sources, title, type, episodes, status, season, year, picture, thumbnail, synonyms, relations, tags" +
@@ -235,9 +232,7 @@ export class AnimeDatabase {
         return entity;
     }
 
-    getAnimeByID(
-        id: number
-    ):
+    getAnimeByID(id: number):
         | (AnimeEntity & {
               id: number;
           })
@@ -256,13 +251,13 @@ export class AnimeDatabase {
             throw new Error("Anime Database is not ready yet");
 
         const res: {
-            id: number;
+            rowid: number;
             title: string;
         }[] = this.sql
             .prepare(
-                `SELECT rowid, title FROM ${this.ftsTableName} WHERE ${this.ftsTableName} MATCH ? ORDER BY rank;`
+                `SELECT rowid, title FROM ${this.ftsTableName} WHERE ${this.ftsTableName} MATCH ? ORDER BY rank LIMIT 10;`
             )
-            .get(term);
+            .all(term);
 
         return res;
     }
