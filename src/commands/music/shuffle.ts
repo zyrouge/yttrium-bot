@@ -27,20 +27,20 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.plugins.music.getQueue(msg);
             if (!queue)
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
 
-            app.music.shuffle(msg);
+            app.plugins.music.shuffle(msg);
             return {
                 content: `${Emojis.MUSIC} | Shuffled the queue!`,
             };
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

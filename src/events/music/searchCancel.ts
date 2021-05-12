@@ -3,7 +3,7 @@ import { AppFile } from "@/base/app";
 import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.music.on("searchCancel", (msg: Message) => {
+    app.plugins.music.on("searchCancel", (msg: Message) => {
         msg.channel.send(
             `${Emojis.DANGER} | Timed out! No response was provided was in time.`
         );

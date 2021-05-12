@@ -1,47 +1,44 @@
 import { CronJob } from "cron";
-import { Constants, Logger } from "@/util";
-import { FetchAndUpdateDatabase as AnimeDB } from "@/base/plugins/animedb/AnimeDatabase";
-import { FetchAndUpdateDatabase as AnimeListTop } from "@/base/plugins/animelist/top";
+import { App } from "@/base/app";
+import { Logger } from "@/util";
 
 export interface PreScheduledJobEnitity {
     time: string;
     jobs: (() => any)[];
 }
 
-export const PreScheduledJobs: PreScheduledJobEnitity[] = [
-    {
-        time: Constants.cron.every6hours,
-        jobs: [AnimeDB, AnimeListTop],
-    },
-];
-
 export interface RunnerEnitity {
+    name: string;
     time: string;
     runner: CronJob;
 }
 
-export const Runners: RunnerEnitity[] = [];
+export class CronRunner {
+    app: App;
+    runners: RunnerEnitity[] = [];
 
-export const StartPreScheduledJobs = () => {
-    PreScheduledJobs.forEach(({ time, jobs }) => {
+    constructor(app: App) {
+        this.app = app;
+    }
+
+    addJob(name: string, time: string, fn: () => any) {
         const runner = new CronJob(
             time,
             () => {
-                Logger.info(`Started CronJob: ${time}!`);
-                jobs.forEach((x) => {
-                    try {
-                        x();
-                    } catch (err) {}
-                });
+                Logger.info(`Started CronJob: ${name} [${time}]!`);
+                try {
+                    fn();
+                } catch (err) {}
             },
             () => {
-                Logger.info(`Finished CronJob: ${time}!`);
+                Logger.info(`Finished CronJob: ${name} [${time}]!`);
             }
         );
 
-        Runners.push({
+        this.runners.push({
+            name,
             time,
             runner,
         });
-    });
-};
+    }
+}

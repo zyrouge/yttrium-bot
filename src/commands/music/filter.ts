@@ -42,7 +42,7 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.plugins.music.getQueue(msg);
             if (!queue) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
@@ -68,7 +68,7 @@ const fn: AppFile = (app) => {
 
                 if (Object.keys(newFilters).length) {
                     msg.react(Emojis.TIMER).catch(() => {});
-                    await app.music.setFilters(msg, newFilters);
+                    await app.plugins.music.setFilters(msg, newFilters);
                 }
             }
 
@@ -106,7 +106,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

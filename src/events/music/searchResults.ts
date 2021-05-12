@@ -4,7 +4,7 @@ import { AppFile } from "@/base/app";
 import { Colors, Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.music.on(
+    app.plugins.music.on(
         "searchResults",
         (msg: Message, query: string, tracks: Track[]) => {
             const embed = new MessageEmbed();

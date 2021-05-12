@@ -4,11 +4,14 @@ import { AppFile } from "@/base/app";
 import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.music.on("trackAdd", (msg: Message, queue: Queue, track: Track) => {
-        msg.channel.send(
-            `${Emojis.MUSIC} | **${track.title}** has been added to the queue!`
-        );
-    });
+    app.plugins.music.on(
+        "trackAdd",
+        (msg: Message, queue: Queue, track: Track) => {
+            msg.channel.send(
+                `${Emojis.MUSIC} | **${track.title}** has been added to the queue!`
+            );
+        }
+    );
 };
 
 export default fn;

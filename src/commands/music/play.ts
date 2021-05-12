@@ -11,7 +11,7 @@ const fn: AppFile = (app) => {
             category: "music",
             args: [
                 {
-                    name: "term",
+                    name: "terms",
                     alias: "t",
                     type: String,
                     multiple: true,
@@ -35,18 +35,18 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            if (!args.length) {
+            if (!args.terms) {
                 return {
                     content: `${Emojis.DANGER} | Provide some search terms to fetch results!`,
                 };
             }
 
             msg.react(Emojis.SEARCH).catch(() => {});
-            app.music.play(msg, args.join(" "), true);
+            app.plugins.music.play(msg, args.terms.join(" "), true);
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

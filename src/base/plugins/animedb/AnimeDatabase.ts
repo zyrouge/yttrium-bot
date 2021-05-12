@@ -1,6 +1,6 @@
 import path from "path";
+import fs from "fs";
 import axios from "axios";
-import Fuse from "fuse.js";
 import { Readable } from "stream";
 import { parser as StreamParser } from "stream-json/Parser";
 import { streamArray as StreamArray } from "stream-json/streamers/StreamArray";
@@ -8,75 +8,6 @@ import { pick as StreamPick } from "stream-json/filters/Pick";
 import { BSQLDatabase } from "@/base/database/BSQLDatabase";
 import { Constants, Functions, Logger } from "@/util";
 import { getCacheInfo, updateCacheInfo } from "@/base/database/CacheInfoFile";
-
-export const DataDir = path.join(Constants.paths.data, "animedb");
-export const DatabasePath = path.join(DataDir, "data.db");
-export const CacheInfoPath = path.join(DataDir, "cacheInfo.json");
-export const MaxAliveTime = 21600000;
-
-export const DataSplitter = "__,__";
-
-export const Database = new BSQLDatabase({
-    path: DatabasePath,
-    name: "anime_db",
-    schema: {
-        attributes: {
-            id: {
-                type: "integer",
-                constraints: ["PRIMARY KEY", "NOT NULL"],
-            },
-            sources: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            title: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            type: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            episodes: {
-                type: "integer",
-                constraints: ["NOT NULL"],
-            },
-            status: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            season: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            year: {
-                type: "integer",
-                constraints: [],
-            },
-            picture: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            thumbnail: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            synonyms: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            relations: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-            tags: {
-                type: "text",
-                constraints: ["NOT NULL"],
-            },
-        },
-        others: ["UNIQUE(title)"],
-    },
-});
 
 export interface AnimeEntity {
     sources: string[];
@@ -95,186 +26,241 @@ export interface AnimeEntity {
     tags: string[];
 }
 
-export const FetchAndUpdateDatabase = async () => {
-    if (!Database.ready) Database.prepare();
+export class AnimeDatabase {
+    dbDir = path.join(Constants.paths.data, "animedb");
+    dbPath = path.join(this.dbDir, "data.db");
+    cacheInfoPath = path.join(this.dbDir, "cacheInfo.json");
+    maxAliveTime = 21600000;
+    dataSplitter = "__,__";
 
-    try {
-        const cacheInfo = await getCacheInfo(CacheInfoPath);
-        if (cacheInfo) {
-            const expires = cacheInfo.lastUpdated + MaxAliveTime;
-            if (expires > Date.now())
-                return Logger.info(
-                    `Skipping Anime Database update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
-                        Functions.parseMs(expires - Date.now())
-                    )}`
-                );
-        }
-    } catch (err) {}
+    sql = BSQLDatabase(this.dbPath);
+    mainTableName = "anime_db";
+    ftsTableName = "anime_db_fts";
+    ready = false;
+    isBeingUpdated = false;
 
-    return new Promise<void>(async (resolve, reject) => {
+    constructor() {}
+
+    async prepare() {
+        this.sql
+            .prepare(
+                `CREATE TABLE IF NOT EXISTS ${this.mainTableName} (` +
+                    "id integer PRIMARY KEY NOT NULL, " +
+                    "sources text NOT NULL, " +
+                    "title text NOT NULL, " +
+                    "type text NOT NULL, " +
+                    "episodes integer NOT NULL, " +
+                    "status text NOT NULL, " +
+                    "season text NOT NULL, " +
+                    "year integer, " +
+                    "picture text NOT NULL, " +
+                    "thumbnail text NOT NULL, " +
+                    "synonyms text NOT NULL, " +
+                    "relations text NOT NULL, " +
+                    "tags text NOT NULL, " +
+                    "UNIQUE(title)" +
+                    ");"
+            )
+            .run();
+
+        this.sql
+            .prepare(
+                `CREATE VIRTUAL TABLE IF NOT EXISTS ${this.ftsTableName} USING fts5 (` +
+                    "title, " +
+                    "synonyms, " +
+                    "tags, " +
+                    `content='${this.mainTableName}', ` +
+                    "content_rowid='id'" +
+                    ");"
+            )
+            .run();
+
+        this.ready = true;
+        return this.sql;
+    }
+
+    async fetchAndUpdateDatabase() {
+        if (!this.ready) throw new Error("Anime Database is not ready yet");
+
         try {
-            Logger.info("Updating Anime Database...");
+            const cacheInfo = await getCacheInfo(this.cacheInfoPath);
+            if (cacheInfo) {
+                const expires = cacheInfo.lastUpdated + this.maxAliveTime;
+                if (expires > Date.now())
+                    return Logger.info(
+                        `Skipping Anime Database update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
+                            Functions.parseMs(expires - Date.now())
+                        )}`
+                    );
+            }
+        } catch (err) {}
 
-            const res = await axios.get<Readable>(
-                Constants.urls.animeOfflineDatabase.dataJson,
-                {
-                    responseType: "stream",
-                    headers: {
-                        "User-Agent": Constants.http.UserAgent,
-                    },
-                }
-            );
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                this.isBeingUpdated = true;
+                Logger.info("Updating Anime Database...");
 
-            const collector = res.data
-                .pipe(StreamParser())
-                .pipe(StreamPick({ filter: "data" }))
-                .pipe(StreamArray());
+                const res = await axios.get<Readable>(
+                    Constants.urls.animeOfflineDatabase.dataJson,
+                    {
+                        responseType: "stream",
+                        headers: {
+                            "User-Agent": Constants.http.UserAgent,
+                        },
+                    }
+                );
 
-            collector.on(
-                "data",
-                (data: { key: number; value: AnimeEntity }) => {
-                    try {
-                        const {
-                            sources,
-                            title,
-                            type,
-                            episodes,
-                            status,
-                            animeSeason: { season, year },
-                            picture,
-                            thumbnail,
-                            synonyms,
-                            relations,
-                            tags,
-                        } = data.value;
+                const collector = res.data
+                    .pipe(StreamParser())
+                    .pipe(StreamPick({ filter: "data" }))
+                    .pipe(StreamArray());
 
-                        Database.sql
-                            .prepare(
-                                `INSERT OR IGNORE INTO ${Database.name} (` +
-                                    "sources, title, type, episodes, status, season, year, picture, thumbnail, synonyms, relations, tags" +
-                                    ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                            )
-                            .run(
-                                sources.join(DataSplitter),
+                collector.on(
+                    "data",
+                    async (data: { key: number; value: AnimeEntity }) => {
+                        try {
+                            collector.pause();
+
+                            const {
+                                sources,
                                 title,
                                 type,
                                 episodes,
                                 status,
-                                season,
-                                year,
+                                animeSeason: { season, year },
                                 picture,
                                 thumbnail,
-                                synonyms.join(DataSplitter),
-                                relations.join(DataSplitter),
-                                tags.join(DataSplitter)
+                                synonyms,
+                                relations,
+                                tags,
+                            } = data.value;
+
+                            const {
+                                changes,
+                                lastInsertRowid,
+                            } = this.sql
+                                .prepare(
+                                    `INSERT OR IGNORE INTO ${this.mainTableName} (` +
+                                        "sources, title, type, episodes, status, season, year, picture, thumbnail, synonyms, relations, tags" +
+                                        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                                )
+                                .run(
+                                    sources.join(this.dataSplitter),
+                                    title,
+                                    type,
+                                    episodes,
+                                    status,
+                                    season,
+                                    year,
+                                    picture,
+                                    thumbnail,
+                                    synonyms.join(this.dataSplitter),
+                                    relations.join(this.dataSplitter),
+                                    tags.join(this.dataSplitter)
+                                );
+
+                            if (changes) {
+                                this.sql
+                                    .prepare(
+                                        `INSERT OR IGNORE INTO ${this.ftsTableName} (` +
+                                            "rowid, title, synonyms, tags" +
+                                            ") VALUES (?, ?, ?, ?);"
+                                    )
+                                    .run(
+                                        lastInsertRowid,
+                                        title,
+                                        synonyms.join(","),
+                                        tags.join(",")
+                                    );
+                            }
+
+                            await Functions.sleep(50);
+                            collector.resume();
+                        } catch (err) {
+                            this.isBeingUpdated = false;
+                            Logger.error(
+                                `Failed to update Anime Database! - ${err}`
                             );
-                    } catch (err) {
-                        Logger.error(
-                            `Failed to update Anime Database! - ${err}`
-                        );
-                        reject(err);
+                            reject(err);
+                        }
                     }
-                }
-            );
+                );
 
-            collector.on("end", async () => {
-                Logger.info("Updated Anime Database!");
-                await updateCacheInfo(CacheInfoPath, {
-                    lastUpdated: Date.now(),
+                collector.on("end", async () => {
+                    Logger.info("Updated Anime Database!");
+                    await updateCacheInfo(this.cacheInfoPath, {
+                        lastUpdated: Date.now(),
+                    });
+                    this.isBeingUpdated = false;
+                    resolve();
                 });
-                resolve();
-            });
 
-            collector.on("error", (err) => {
+                collector.on("error", (err) => {
+                    this.isBeingUpdated = false;
+                    Logger.error(`Failed to update Anime Database! - ${err}`);
+                    reject(err);
+                });
+            } catch (err) {
+                this.isBeingUpdated = false;
                 Logger.error(`Failed to update Anime Database! - ${err}`);
                 reject(err);
-            });
-        } catch (err) {
-            Logger.error(`Failed to update Anime Database! - ${err}`);
-            reject(err);
-        }
-    });
-};
+            }
+        });
+    }
 
-export const parseDataToEnitity = (data: any) => {
-    const entity: AnimeEntity & {
-        id: number;
-    } = {
-        id: data.id,
-        sources: data.sources.split(DataSplitter),
-        title: data.title,
-        type: data.type,
-        episodes: data.episodes,
-        status: data.status,
-        animeSeason: {
-            season: data.season,
-            year: data.year,
-        },
-        picture: data.picture,
-        thumbnail: data.thumbnail,
-        synonyms: data.synonyms.split(DataSplitter),
-        relations: data.relations.split(DataSplitter),
-        tags: data.tags.split(DataSplitter),
-    };
-
-    return entity;
-};
-
-export const getAnimeByID = (
-    id: number
-): ReturnType<typeof parseDataToEnitity> | undefined => {
-    const data = Database.sql
-        .prepare(`SELECT * FROM ${Database.name} WHERE id = ?`)
-        .get(id);
-    return data && parseDataToEnitity(data);
-};
-
-export const searchAnime = (term: string) => {
-    // some aggressive fuzzy search like implementation *question mark*
-    const sqlterm = term
-        .toLowerCase()
-        .replace(/[^A-Za-z0-9]/g, "")
-        .split("")
-        .map((x) => `%${x}%`)
-        .join("");
-
-    const data: {
-        id: number;
-        title: string;
-        synonyms: string[];
-        tags: string[];
-    }[] = Database.sql
-        .prepare(
-            `SELECT id, title, synonyms, tags FROM ${Database.name} WHERE` +
-                " LOWER(title) LIKE ?" +
-                ` OR REPLACE(synonyms, '${DataSplitter}', '') LIKE ?` +
-                ` OR REPLACE(tags, '${DataSplitter}', '') LIKE ?`
-        )
-        .all(sqlterm, sqlterm, sqlterm)
-        .map((x) =>
-            Object.assign(x, {
-                synonyms: x.synonyms.split(DataSplitter),
-                tags: x.tags.split(DataSplitter),
-            })
-        );
-    if (!data?.length) return null;
-
-    const fuse = new Fuse(data, {
-        keys: [
-            {
-                name: "title",
-                weight: 2,
+    parseDataToEnitity(data: any) {
+        const entity: AnimeEntity & {
+            id: number;
+        } = {
+            id: data.id,
+            sources: data.sources.split(this.dataSplitter),
+            title: data.title,
+            type: data.type,
+            episodes: data.episodes,
+            status: data.status,
+            animeSeason: {
+                season: data.season,
+                year: data.year,
             },
-            "synonyms",
-            {
-                name: "tags",
-                weight: 0.7,
-            },
-        ],
-        isCaseSensitive: true,
-    });
-    return fuse
-        .search(term)
-        .slice(0, 10)
-        .map((x) => ({ id: x.item.id, title: x.item.title }));
-};
+            picture: data.picture,
+            thumbnail: data.thumbnail,
+            synonyms: data.synonyms.split(this.dataSplitter),
+            relations: data.relations.split(this.dataSplitter),
+            tags: data.tags.split(this.dataSplitter),
+        };
+
+        return entity;
+    }
+
+    getAnimeByID(
+        id: number
+    ):
+        | (AnimeEntity & {
+              id: number;
+          })
+        | undefined {
+        if (!this.ready || this.isBeingUpdated)
+            throw new Error("Anime Database is not ready yet");
+
+        const data = this.sql
+            .prepare(`SELECT * FROM ${this.mainTableName} WHERE id = ?`)
+            .get(id);
+        return data && this.parseDataToEnitity(data);
+    }
+
+    searchAnime(term: string) {
+        if (!this.ready || this.isBeingUpdated)
+            throw new Error("Anime Database is not ready yet");
+
+        const res: {
+            id: number;
+            title: string;
+        }[] = this.sql
+            .prepare(
+                `SELECT rowid, title FROM ${this.ftsTableName} WHERE ${this.ftsTableName} MATCH ? ORDER BY rank;`
+            )
+            .get(term);
+
+        return res;
+    }
+}

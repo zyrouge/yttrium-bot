@@ -1,32 +1,25 @@
 import path from "path";
 import fs from "fs-extra";
-import { Player, PlayerOptions } from "discord-player";
 import { Bot, BotOptions } from "@/base/bot";
-import { CommandManager } from "@/base/plugins/commands";
-import { FetchAndUpdateDatabase as AnimeDB } from "@/base/plugins/animedb/AnimeDatabase";
-import { StartPreScheduledJobs } from "./plugins/cron/Runner";
+import { PluginsManager, PluginsManagerOptions } from "@/base/plugins/manager";
 import { Logger } from "@/util";
 
 export type AppFile = (app: App) => any;
 
 export interface AppOptions {
     botOptions: BotOptions;
-    musicOptions: PlayerOptions;
+    pluginOptions: PluginsManagerOptions;
 }
 
 export class App {
     options: AppOptions;
     bot: Bot;
-    commands: CommandManager;
-    music: Player;
-    cacheData: Map<string, any>;
+    plugins: PluginsManager;
 
     constructor(options: AppOptions) {
         this.options = options;
         this.bot = new Bot(options.botOptions);
-        this.commands = new CommandManager();
-        this.music = new Player(this.bot, options.musicOptions);
-        this.cacheData = new Map();
+        this.plugins = new PluginsManager(this, options.pluginOptions);
     }
 
     async dir(dir: string) {
@@ -49,5 +42,6 @@ export class App {
 
     async ready() {
         await this.bot.connect();
+        await this.plugins.ready();
     }
 }

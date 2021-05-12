@@ -27,7 +27,7 @@ const fn: AppFile = (app) => {
         if (!prefix || !content) return;
         const [cmdName, ...contents] = content.split(" ");
 
-        const command = app.commands.resolve(cmdName);
+        const command = app.plugins.commands.resolve(cmdName);
         if (!command) return;
 
         let args: ArgsParserReturn;

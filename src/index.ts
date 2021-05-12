@@ -6,7 +6,6 @@ import { Intents } from "discord.js";
 import { App } from "@/base/app";
 import HttpStreams from "@/base/plugins/music/HttpStreams";
 import { Logger } from "./util";
-import { PostReadyJobs } from "./base/misc/postReady";
 
 const start = async () => {
     dotenv.config();
@@ -29,16 +28,18 @@ const start = async () => {
                 },
             },
         },
-        musicOptions: {
-            ytdlDownloadOptions: {
-                requestOptions: {
-                    headers: {
-                        cookie: process.env.YT_COOKIE,
+        pluginOptions: {
+            musicOptions: {
+                ytdlDownloadOptions: {
+                    requestOptions: {
+                        headers: {
+                            cookie: process.env.YT_COOKIE,
+                        },
                     },
-                },
-                quality: "highestaudio",
-                filter: (format) => {
-                    return format.hasAudio && !!format.audioBitrate;
+                    quality: "highestaudio",
+                    filter: (format) => {
+                        return format.hasAudio && !!format.audioBitrate;
+                    },
                 },
             },
         },
@@ -46,12 +47,10 @@ const start = async () => {
 
     await app.dir(path.join(__dirname, "events"));
     await app.dir(path.join(__dirname, "commands"));
-    app.music.use("URL_STREAM", HttpStreams);
+    app.plugins.music.use("URL_STREAM", HttpStreams);
 
     await app.ready();
     Logger.info(`Application loaded successfully!`);
-
-    PostReadyJobs();
 };
 
 start();

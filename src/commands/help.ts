@@ -16,7 +16,7 @@ const fn: AppFile = (app) => {
             args: [], // todo
         },
         async ({ args }) => {
-            const allCommands = [...app.commands.commands.values()];
+            const allCommands = [...app.plugins.commands.commands.values()];
 
             const page = args[0] && !isNaN(args[0] as any) ? +args[0] - 1 : 0,
                 itemsPerPage = 5;
@@ -70,7 +70,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

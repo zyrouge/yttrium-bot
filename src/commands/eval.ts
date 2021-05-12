@@ -64,7 +64,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

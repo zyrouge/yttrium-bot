@@ -28,7 +28,7 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.plugins.music.getQueue(msg);
             if (!queue) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
@@ -56,7 +56,7 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const np = app.music.nowPlaying(msg);
+            const np = app.plugins.music.nowPlaying(msg);
             if (np)
                 if (np)
                     embed.addField(
@@ -85,7 +85,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

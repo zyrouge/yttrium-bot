@@ -3,9 +3,9 @@ import { AppFile } from "@/base/app";
 import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.music.on("queueEnd", (msg: Message) => {
+    app.plugins.music.on("queueEnd", (msg: Message) => {
         const cacheKey = `music_msg_${msg.guild!.id}`;
-        const pmsgurl: string = app.cacheData.get(cacheKey);
+        const pmsgurl: string = app.plugins.cacheData.get(cacheKey);
         const pmsg = msg.channel.messages.cache.get(pmsgurl);
         if (pmsg) {
             try {

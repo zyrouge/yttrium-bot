@@ -14,7 +14,6 @@ const fn: AppFile = (app) => {
                     name: "loop",
                     alias: "l",
                     type: String,
-                    defaultValue: null,
                     defaultOption: true,
                 },
             ],
@@ -35,7 +34,7 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.music.getQueue(msg);
+            const queue = app.plugins.music.getQueue(msg);
             if (!queue) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
@@ -43,8 +42,9 @@ const fn: AppFile = (app) => {
             }
 
             const options = ["track", "queue", "none"];
-            if (args[0]) {
-                if (!options.includes(args[0])) {
+            if (args.loop) {
+                const loop = args.join(" ");
+                if (!options.includes(loop)) {
                     return {
                         content: `${
                             Emojis.DANGER
@@ -54,26 +54,30 @@ const fn: AppFile = (app) => {
                     };
                 }
 
-                switch (args[0]) {
+                switch (loop) {
                     case "track":
                     case "song":
                     case "this":
-                        queue.loopMode && app.music.setLoopMode(msg, false);
-                        app.music.setRepeatMode(msg, true);
+                        queue.loopMode &&
+                            app.plugins.music.setLoopMode(msg, false);
+                        app.plugins.music.setRepeatMode(msg, true);
                         break;
 
                     case "all":
                     case "queue":
                     case "list":
-                        queue.repeatMode && app.music.setRepeatMode(msg, false);
-                        app.music.setLoopMode(msg, true);
+                        queue.repeatMode &&
+                            app.plugins.music.setRepeatMode(msg, false);
+                        app.plugins.music.setLoopMode(msg, true);
                         break;
 
                     case "none":
                     case "disable":
                     case "off":
-                        queue.loopMode && app.music.setLoopMode(msg, false);
-                        queue.repeatMode && app.music.setRepeatMode(msg, false);
+                        queue.loopMode &&
+                            app.plugins.music.setLoopMode(msg, false);
+                        queue.repeatMode &&
+                            app.plugins.music.setRepeatMode(msg, false);
                         break;
                 }
             }
@@ -90,7 +94,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;

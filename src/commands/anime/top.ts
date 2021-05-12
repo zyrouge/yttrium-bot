@@ -1,11 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import {
-    getAnimes,
-    TopAnimeTypes,
-    TopAnimeTypesType,
-} from "@/base/plugins/animelist/top";
+import { TopAnimeTypes, TopAnimeTypesType } from "@/base/plugins/animelist/Top";
 import { Emojis, Constants, Functions, Colors } from "@/util";
 
 const fn: AppFile = (app) => {
@@ -13,7 +9,7 @@ const fn: AppFile = (app) => {
         {
             name: "topanimes",
             description: "Shows top animes",
-            aliases: ["topanimes", "tanime", "tanimes"],
+            aliases: ["topanime", "tanime", "tanimes"],
             category: "anime",
             args: [
                 {
@@ -45,7 +41,7 @@ const fn: AppFile = (app) => {
                 }
 
                 msg.react(Emojis.TIMER).catch(() => {});
-                const all = await getAnimes({
+                const all = app.plugins.animelist.getAnimes({
                     type: !!type && type,
                 });
 
@@ -102,7 +98,7 @@ const fn: AppFile = (app) => {
         }
     );
 
-    app.commands.add(command);
+    app.plugins.commands.add(command);
 };
 
 export default fn;
