@@ -30,6 +30,7 @@ export const Emojis = {
     SYSTEM: "💻",
     BOT: "🤖",
     CHAIN: "⛓️",
+    PAPER_PENCIL: "📝",
 };
 
 export const Colors = {
@@ -139,6 +140,13 @@ export const Constants = {
             base: "https://github.com/manami-project/anime-offline-database",
             dataJson:
                 "https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json",
+        },
+        animeQuote: {
+            random: "https://animechan.vercel.app/api/random",
+        },
+        assets: {
+            animeBlush:
+                "https://raw.githubusercontent.com/zyrouge/yttrium-bot/next/media/images/anime_blush.jpg",
         },
     },
     cron: {

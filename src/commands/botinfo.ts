@@ -51,6 +51,7 @@ const fn: AppFile = (app) => {
 
             embed.setColor(Colors.WHITE);
             embed.setTimestamp();
+            embed.setImage(Constants.urls.assets.animeBlush);
 
             return { embed };
         }

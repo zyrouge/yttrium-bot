@@ -102,7 +102,7 @@ export class AnimeTopList {
     }
 
     async TopAnimesFetcher(options: TopAnimesOptions) {
-        const { data } = await axios.get(
+        const { data } = await axios.get<string>(
             Constants.urls.animeList.top(options.type),
             {
                 responseType: "text",
