@@ -1,15 +1,7 @@
-import { Client as GeniusClient, Song } from "genius-lyrics";
+import { search, SearchSongEnitity, getTrack } from "azlyrics-ext";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
 import { Constants, Emojis, Functions } from "@/util";
-
-const genius = new GeniusClient(undefined, {
-    requestOptions: {
-        headers: {
-            "User-Agent": Constants.http.UserAgent,
-        },
-    },
-});
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -42,9 +34,9 @@ const fn: AppFile = (app) => {
                 msg.react(Emojis.SEARCH).catch(() => {});
 
                 const terms = args.terms.join(" ");
-                let song: Song | undefined;
+                let song: SearchSongEnitity | undefined;
                 try {
-                    song = (await genius.songs.search(terms))?.[0];
+                    song = (await search(terms))?.[0];
                 } catch (err) {}
                 if (!song) {
                     return {
@@ -54,7 +46,7 @@ const fn: AppFile = (app) => {
 
                 let lyrics: string | undefined;
                 try {
-                    lyrics = await song.lyrics();
+                    lyrics = (await getTrack(song.url)).lyrics;
                 } catch (err) {}
                 if (!lyrics?.length) {
                     return {
@@ -64,7 +56,7 @@ const fn: AppFile = (app) => {
 
                 const maxLength = 1500;
                 const pages: string[] = [
-                    `${Emojis.MUSIC} | Lyrics of **${song.featuredTitle}** by **${song.artist.name}**\n\n`,
+                    `${Emojis.MUSIC} | Lyrics of **${song.title}** by **${song.artist}**\n\n`,
                 ];
 
                 lyrics
