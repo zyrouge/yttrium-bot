@@ -256,13 +256,13 @@ export class AnimeDatabase {
             throw new Error("Anime Database is not ready yet");
 
         const res: {
-            id: number;
+            rowid: number;
             title: string;
         }[] = this.sql
             .prepare(
                 `SELECT rowid, title FROM ${this.ftsTableName} WHERE ${this.ftsTableName} MATCH ? ORDER BY rank;`
             )
-            .get(term);
+            .all(term);
 
         return res;
     }
