@@ -29,6 +29,7 @@ export const Emojis = {
     WHITE_FLOWER: "💮",
     SYSTEM: "💻",
     BOT: "🤖",
+    CHAIN: "⛓️",
 };
 
 export const Colors = {

@@ -12,10 +12,13 @@ const fn: AppFile = (app) => {
             args: [
                 {
                     name: "volume",
-                    alias: "vol",
+                    alias: "v",
                     type: Number,
                     defaultOption: true,
                     defaultValue: null,
+                    helpDesc: "Volume to be set",
+                    helpVal: "1-100",
+                    optional: true,
                 },
             ],
         },

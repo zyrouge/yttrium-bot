@@ -36,7 +36,7 @@ export class PluginsManager {
         const animedb = this.animedb.fetchAndUpdateDatabase.bind(this.animedb);
 
         await this.animelist.prepare();
-        const animelist = this.animedb.fetchAndUpdateDatabase.bind(
+        const animelist = this.animelist.fetchAndUpdateDatabase.bind(
             this.animelist
         );
 

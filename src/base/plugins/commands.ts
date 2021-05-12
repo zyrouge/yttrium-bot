@@ -1,8 +1,12 @@
 import Discord from "discord.js";
 import commandLineArgs, { OptionDefinition } from "command-line-args";
+import { Colors, Emojis, Functions } from "@/util";
 
 export const ArgsParser = (args: string[], options: OptionDefinition[]) =>
-    commandLineArgs(options, { argv: args });
+    commandLineArgs(options, {
+        argv: args,
+        stopAtFirstUnknown: true,
+    });
 export type ArgsParserReturn = ReturnType<typeof ArgsParser>;
 
 export const ArgsErrorFormatter = (err: any) => {
@@ -26,15 +30,111 @@ export const ArgsErrorFormatter = (err: any) => {
     }
 };
 
+export interface ArgsOptions extends OptionDefinition {
+    helpDesc: string;
+    helpVal?: string | string[];
+    optional: boolean;
+}
+
+export const CommandCategories = ["misc", "music", "anime"] as const;
+export type CommandCategoriesType = typeof CommandCategories[number];
+
 export interface Command {
     name: string;
     description: string;
     aliases?: string[];
-    usage?: string;
     cooldown?: number;
-    category: "misc" | "music" | "anime";
-    args: OptionDefinition[];
+    category: CommandCategoriesType;
+    args: ArgsOptions[];
 }
+
+export const getCommandHelpEmbed = (prefix: string, cmd: Command) => {
+    const embed = new Discord.MessageEmbed();
+    embed.setTitle(
+        `${Emojis.INFO} | Command: ${Functions.capitalize(cmd.name)}`
+    );
+
+    const invokers = [cmd.name];
+    if (cmd.aliases) invokers.push(...cmd.aliases);
+
+    const desc = [
+        `**Invokers**: ${invokers.map((x) => `\`${x}\``).join(", ")}`,
+        `**Description**: ${cmd.description}`,
+        `**Category**: ${Functions.capitalize(cmd.category)}`,
+    ];
+    if (cmd.cooldown) {
+        desc.push(
+            `**Cooldown**: ${Functions.humanizeDuration(
+                Functions.parseMs(cmd.cooldown)
+            )}`
+        );
+    }
+    embed.setDescription(desc.join("\n"));
+
+    const usage: string[] = [];
+
+    const cmnUsage: string[] = [];
+    const defArg = cmd.args.find((x) => x.defaultOption);
+    if (defArg) {
+        cmnUsage.push(
+            `${prefix}${cmd.name} <${defArg.helpVal || defArg.name}>`
+        );
+    }
+    cmnUsage.push(
+        `${prefix}${cmd.name} ${cmd.args
+            .map((x) => {
+                let val = "value";
+                if (x.helpVal)
+                    val = Array.isArray(x.helpVal)
+                        ? x.helpVal.join(" | ")
+                        : x.helpVal;
+                return `--${x.name} <${val}${x.multiple ? "..." : ""}>`;
+            })
+            .join(" ")}`
+    );
+
+    usage.push(`\`\`\`${cmnUsage.join("\n")}\`\`\``);
+    if (cmd.args.length) {
+        usage.push("__**Arguments**__");
+        cmd.args.forEach((x) => {
+            const ag = [`\`${x.name}\``];
+
+            let val = "value";
+            if (x.helpVal)
+                val = Array.isArray(x.helpVal)
+                    ? x.helpVal.join(" | ")
+                    : x.helpVal;
+            let us = [`--${x.name}`];
+            if (x.alias) us.push(`-${x.alias}`);
+
+            ag.push(
+                `- **Usage**: ${us
+                    .map((u) => `\`${u} <${val}${x.multiple ? "..." : ""}>\``)
+                    .join(", ")}`
+            );
+            ag.push(`- **Description**: ${x.helpDesc}`);
+            ag.push(
+                `- **Type**: \`${
+                    x.type && !!x.type.name
+                        ? x.type.name.toLowerCase()
+                        : "unknown"
+                }\``
+            );
+            ag.push(
+                `- **Takes multiple values**: ${x.multiple ? "Yes" : "No"}`
+            );
+            ag.push(`- **Optional**: ${x.optional ? "Yes" : "No"}`);
+            if (x.defaultValue)
+                ag.push(`- **Default value**: \`${x.defaultValue}\``);
+            usage.push(ag.join("\n"));
+        });
+    }
+    embed.addField(`${Emojis.CHAIN} Usage`, usage.join("\n"));
+    embed.setTimestamp();
+    embed.setColor(Colors.WHITE);
+
+    return embed;
+};
 
 export type CommandRunMessageReturn = Parameters<
     typeof Discord.TextChannel.prototype.send

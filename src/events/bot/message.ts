@@ -5,6 +5,7 @@ import {
     ArgsParser,
     ArgsParserReturn,
     ArgsErrorFormatter,
+    getCommandHelpEmbed,
 } from "@/base/plugins/commands";
 
 const fn: AppFile = (app) => {
@@ -27,8 +28,13 @@ const fn: AppFile = (app) => {
         if (!prefix || !content) return;
         const [cmdName, ...contents] = content.split(" ");
 
-        const command = app.plugins.commands.resolve(cmdName);
+        const command = app.plugins.commands.resolve(cmdName.toLowerCase());
         if (!command) return;
+
+        if (contents.includes("--help")) {
+            const help = getCommandHelpEmbed(prefix, command);
+            return msg.reply({ embed: help });
+        }
 
         let args: ArgsParserReturn;
         try {

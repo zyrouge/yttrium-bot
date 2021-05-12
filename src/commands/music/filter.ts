@@ -23,6 +23,8 @@ const fn: AppFile = (app) => {
                     type: String,
                     defaultOption: true,
                     multiple: true,
+                    helpDesc: "Filters to be added",
+                    optional: true,
                 },
             ],
         },

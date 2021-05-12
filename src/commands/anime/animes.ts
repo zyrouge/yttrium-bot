@@ -15,6 +15,8 @@ const fn: AppFile = (app) => {
                     name: "id",
                     type: Number,
                     defaultValue: null,
+                    helpDesc: "ID of the anime",
+                    optional: true,
                 },
                 {
                     name: "term",
@@ -22,6 +24,9 @@ const fn: AppFile = (app) => {
                     type: String,
                     multiple: true,
                     defaultOption: true,
+                    helpDesc: "Keywords of the anime",
+                    helpVal: "anime",
+                    optional: true,
                 },
             ],
         },
@@ -113,7 +118,7 @@ const fn: AppFile = (app) => {
                 embed.setColor(Colors.YELLOW);
                 embed.setTimestamp();
                 embed.setFooter(
-                    `Use ${prefix}${command.name} --id <id> to view the anime`
+                    `Use \`${prefix}${command.name} --id <id>\` to view the anime`
                 );
 
                 return { embed };

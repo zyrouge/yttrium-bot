@@ -82,21 +82,23 @@ export class AnimeDatabase {
     async fetchAndUpdateDatabase() {
         if (!this.ready) throw new Error("Anime Database is not ready yet");
 
-        try {
-            const cacheInfo = await getCacheInfo(this.cacheInfoPath);
-            if (cacheInfo) {
-                const expires = cacheInfo.lastUpdated + this.maxAliveTime;
-                if (expires > Date.now())
-                    return Logger.info(
-                        `Skipping Anime Database update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
-                            Functions.parseMs(expires - Date.now())
-                        )}`
-                    );
-            }
-        } catch (err) {}
-
         return new Promise<void>(async (resolve, reject) => {
             try {
+                try {
+                    const cacheInfo = await getCacheInfo(this.cacheInfoPath);
+                    if (cacheInfo) {
+                        const expires =
+                            cacheInfo.lastUpdated + this.maxAliveTime;
+                        if (expires > Date.now())
+                            Logger.info(
+                                `Skipping Anime Database update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
+                                    Functions.parseMs(expires - Date.now())
+                                )}`
+                            );
+                        return resolve();
+                    }
+                } catch (err) {}
+
                 this.isBeingUpdated = true;
                 Logger.info("Updating Anime Database...");
 
@@ -115,6 +117,7 @@ export class AnimeDatabase {
                     .pipe(StreamPick({ filter: "data" }))
                     .pipe(StreamArray());
 
+                var that = this;
                 collector.on(
                     "data",
                     async (data: { key: number; value: AnimeEntity }) => {
@@ -138,14 +141,14 @@ export class AnimeDatabase {
                             const {
                                 changes,
                                 lastInsertRowid,
-                            } = this.sql
+                            } = that.sql
                                 .prepare(
-                                    `INSERT OR IGNORE INTO ${this.mainTableName} (` +
+                                    `INSERT OR IGNORE INTO ${that.mainTableName} (` +
                                         "sources, title, type, episodes, status, season, year, picture, thumbnail, synonyms, relations, tags" +
                                         ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
                                 )
                                 .run(
-                                    sources.join(this.dataSplitter),
+                                    sources.join(that.dataSplitter),
                                     title,
                                     type,
                                     episodes,
@@ -154,15 +157,15 @@ export class AnimeDatabase {
                                     year,
                                     picture,
                                     thumbnail,
-                                    synonyms.join(this.dataSplitter),
-                                    relations.join(this.dataSplitter),
-                                    tags.join(this.dataSplitter)
+                                    synonyms.join(that.dataSplitter),
+                                    relations.join(that.dataSplitter),
+                                    tags.join(that.dataSplitter)
                                 );
 
                             if (changes) {
-                                this.sql
+                                that.sql
                                     .prepare(
-                                        `INSERT OR IGNORE INTO ${this.ftsTableName} (` +
+                                        `INSERT OR IGNORE INTO ${that.ftsTableName} (` +
                                             "rowid, title, synonyms, tags" +
                                             ") VALUES (?, ?, ?, ?);"
                                     )
@@ -174,36 +177,36 @@ export class AnimeDatabase {
                                     );
                             }
 
-                            await Functions.sleep(50);
+                            await Functions.sleep(10);
                             collector.resume();
                         } catch (err) {
-                            this.isBeingUpdated = false;
+                            that.isBeingUpdated = false;
                             Logger.error(
                                 `Failed to update Anime Database! - ${err}`
                             );
-                            reject(err);
+                            return reject(err);
                         }
                     }
                 );
 
                 collector.on("end", async () => {
                     Logger.info("Updated Anime Database!");
-                    await updateCacheInfo(this.cacheInfoPath, {
+                    await updateCacheInfo(that.cacheInfoPath, {
                         lastUpdated: Date.now(),
                     });
-                    this.isBeingUpdated = false;
-                    resolve();
+                    that.isBeingUpdated = false;
+                    return resolve();
                 });
 
                 collector.on("error", (err) => {
-                    this.isBeingUpdated = false;
+                    that.isBeingUpdated = false;
                     Logger.error(`Failed to update Anime Database! - ${err}`);
-                    reject(err);
+                    return reject(err);
                 });
             } catch (err) {
                 this.isBeingUpdated = false;
                 Logger.error(`Failed to update Anime Database! - ${err}`);
-                reject(err);
+                return reject(err);
             }
         });
     }
