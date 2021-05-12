@@ -80,9 +80,7 @@ const fn: AppFile = (app) => {
                 }
             } catch (err) {
                 return {
-                    content: `${Emojis.DANGER} | Something went wrong! (${
-                        err?.message ? err.message : err.toString()
-                    })`,
+                    content: `${Emojis.DANGER} | Something went wrong! (${err})`,
                 };
             }
         }

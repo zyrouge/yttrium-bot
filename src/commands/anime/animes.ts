@@ -82,6 +82,9 @@ const fn: AppFile = (app) => {
                     embed.setThumbnail(anime.thumbnail);
                     embed.setImage(anime.picture);
                     embed.setTimestamp();
+                    embed.setFooter(
+                        `Source: ${Constants.urls.animeOfflineDatabase.base}`
+                    );
 
                     return { embed };
                 }

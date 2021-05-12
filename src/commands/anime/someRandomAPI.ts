@@ -60,6 +60,7 @@ const fn: AppFile = (app) => {
                     embed.setImage(data.link);
                     embed.setColor(Colors.PINK);
                     embed.setTimestamp();
+                    embed.setFooter(`Source: ${Functions.getHostFromURL(url)}`);
 
                     return { embed };
                 } catch (err) {

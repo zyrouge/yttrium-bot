@@ -76,7 +76,6 @@ export class AnimeDatabase {
             .run();
 
         this.ready = true;
-        return this.sql;
     }
 
     async fetchAndUpdateDatabase() {
@@ -89,13 +88,14 @@ export class AnimeDatabase {
                     if (cacheInfo) {
                         const expires =
                             cacheInfo.lastUpdated + this.maxAliveTime;
-                        if (expires > Date.now())
+                        if (expires > Date.now()) {
                             Logger.info(
                                 `Skipping Anime Database update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
                                     Functions.parseMs(expires - Date.now())
                                 )}`
                             );
-                        return resolve();
+                            return resolve();
+                        }
                     }
                 } catch (err) {}
 

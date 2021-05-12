@@ -39,6 +39,7 @@ export const Colors = {
     WHITE: 16711679,
     PURPLE: 14091260,
     PINK: 16711935,
+    REDDIT_ORANGE: 16733952,
 };
 
 export const Functions = {
@@ -149,6 +150,7 @@ export const Constants = {
         assets: {
             animeBlush:
                 "https://raw.githubusercontent.com/zyrouge/yttrium-bot/next/media/images/anime_blush.jpg",
+            reddit: "https://www.redditinc.com/assets/images/site/reddit-logo.png",
         },
         nekosLife: {
             baka: "https://nekos.life/api/v2/img/baka",
