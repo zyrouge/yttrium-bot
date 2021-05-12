@@ -30,6 +30,7 @@ export const Emojis = {
     SYSTEM: "💻",
     BOT: "🤖",
     CHAIN: "⛓️",
+    PAPER_PENCIL: "📝",
 };
 
 export const Colors = {
@@ -37,6 +38,8 @@ export const Colors = {
     BLUE: 5940704,
     WHITE: 16711679,
     PURPLE: 14091260,
+    PINK: 16711935,
+    REDDIT_ORANGE: 16733952,
 };
 
 export const Functions = {
@@ -100,6 +103,7 @@ export const Functions = {
             stdout.match(/\w+/)?.[0] || "Unknown");
         return sha;
     },
+    random: <T>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)],
 };
 
 export const Constants = {
@@ -140,8 +144,42 @@ export const Constants = {
             dataJson:
                 "https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json",
         },
+        animeQuote: {
+            random: "https://animechan.vercel.app/api/random",
+        },
+        assets: {
+            animeBlush:
+                "https://raw.githubusercontent.com/zyrouge/yttrium-bot/next/media/images/anime_blush.jpg",
+            reddit: "https://www.redditinc.com/assets/images/site/reddit-logo.png",
+        },
+        nekosLife: {
+            baka: "https://nekos.life/api/v2/img/baka",
+            cuddle: "https://nekos.life/api/v2/img/cuddle",
+            feed: "https://nekos.life/api/v2/img/feed",
+            hug: "https://nekos.life/api/v2/img/hug",
+            kiss: "https://nekos.life/api/v2/img/kiss",
+            pat: "https://nekos.life/api/v2/img/pat",
+            poke: "https://nekos.life/api/v2/img/poke",
+            smug: "https://nekos.life/api/v2/img/smug",
+            tickle: "https://nekos.life/api/v2/img/tickle",
+            slap: "https://nekos.life/api/v2/img/slap",
+        },
+        someRandomAPI: {
+            wink: "https://some-random-api.ml/animu/wink",
+        },
     },
     cron: {
         every6hours: "0 */6 * * *",
     },
+    kawaiiFaces: [
+        "(◠‿◠✿)",
+        "（＊＾Ｕ＾）人（≧Ｖ≦＊）/",
+        "＼（＾○＾）人（＾○＾）／",
+        "ヾ(＠⌒▽⌒＠)ﾉ",
+        "≧◡≦",
+        "(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
+        "(づ｡◕‿‿◕｡)づ",
+        "＼(*^▽^*)/",
+        "(◠△◠✿)",
+    ],
 };

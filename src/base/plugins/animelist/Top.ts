@@ -61,12 +61,15 @@ export class AnimeTopList {
             const cacheInfo = await getCacheInfo(this.cacheInfoPath);
             if (cacheInfo) {
                 const expires = cacheInfo.lastUpdated + this.maxAliveTime;
-                if (expires > Date.now())
+                if (expires > Date.now()) {
+                    const data = await fs.readFile(this.dbPath);
+                    TopAnimeCache = JSON.parse(data.toString());
                     return Logger.info(
                         `Skipping Anime list update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
                             Functions.parseMs(expires - Date.now())
                         )}`
                     );
+                }
             }
         } catch (err) {}
 
@@ -102,7 +105,7 @@ export class AnimeTopList {
     }
 
     async TopAnimesFetcher(options: TopAnimesOptions) {
-        const { data } = await axios.get(
+        const { data } = await axios.get<string>(
             Constants.urls.animeList.top(options.type),
             {
                 responseType: "text",

@@ -10,7 +10,18 @@ const fn: AppFile = (app) => {
             description: "Shows the current queue",
             aliases: ["q", "songs", "list"],
             category: "music",
-            args: [],
+            args: [
+                {
+                    name: "page",
+                    alias: "p",
+                    type: Number,
+                    defaultValue: null,
+                    defaultOption: true,
+                    helpDesc: "Page number",
+                    helpVal: "number",
+                    optional: true,
+                },
+            ],
         },
         async ({ msg, args }) => {
             if (!msg.member?.voice.channel) {
@@ -41,8 +52,8 @@ const fn: AppFile = (app) => {
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);
 
-            const page = args[0] && !isNaN(args[0] as any) ? +args[0] - 1 : 0;
-            if (page < 0)
+            const page = args.page - 1;
+            if (isNaN(page) || page < 0)
                 return {
                     content: `${Emojis.DANGER} | Invalid page number!`,
                 };

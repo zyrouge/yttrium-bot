@@ -36,7 +36,7 @@ export interface ArgsOptions extends OptionDefinition {
     optional: boolean;
 }
 
-export const CommandCategories = ["misc", "music", "anime"] as const;
+export const CommandCategories = ["misc", "music", "anime", "image"] as const;
 export type CommandCategoriesType = typeof CommandCategories[number];
 
 export interface Command {

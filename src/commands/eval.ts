@@ -32,7 +32,7 @@ const fn: AppFile = (app) => {
 
                 if (!args.code) {
                     return {
-                        content: `${Emojis.DANGER} | Provide some search terms to fetch results!`,
+                        content: `${Emojis.DANGER} | Provide some search terms to evaluate!`,
                     };
                 }
 
