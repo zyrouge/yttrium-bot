@@ -32,6 +32,8 @@ export const Emojis = {
     CHAIN: "⛓️",
     PAPER_PENCIL: "📝",
     HEART: "❤️",
+    EIGHTBALL: "🎱",
+    THINKING: "🤔",
 };
 
 export const Colors = {

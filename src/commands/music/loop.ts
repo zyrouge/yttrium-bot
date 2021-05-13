@@ -46,7 +46,7 @@ const fn: AppFile = (app) => {
 
             const options = ["track", "queue", "none"];
             if (args.loop) {
-                const loop = args.loop.join(" ");
+                const loop = args.loop;
                 if (!options.includes(loop)) {
                     return {
                         content: `${
