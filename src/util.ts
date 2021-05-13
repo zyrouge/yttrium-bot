@@ -31,6 +31,9 @@ export const Emojis = {
     BOT: "🤖",
     CHAIN: "⛓️",
     PAPER_PENCIL: "📝",
+    HEART: "❤️",
+    EIGHTBALL: "🎱",
+    THINKING: "🤔",
 };
 
 export const Colors = {
@@ -129,6 +132,7 @@ export const Constants = {
         discordMention: (id: string = "\\d+", flags?: string) =>
             new RegExp(`<@!?${id}>`, flags),
         url: /^(https?:\/\/)/,
+        jpgOrPng: /.(jpg|jpeg|png)$/,
     },
     urls: {
         animeList: {
@@ -167,9 +171,17 @@ export const Constants = {
         someRandomAPI: {
             wink: "https://some-random-api.ml/animu/wink",
         },
+        animeGirlsHoldingProgrammingBooks: {
+            base: "https://github.com/laynH/Anime-Girls-Holding-Programming-Books",
+            contentsApi:
+                "https://api.github.com/repos/laynH/Anime-Girls-Holding-Programming-Books/git/trees/master?recursive=1",
+            rawBase:
+                "https://raw.githubusercontent.com/laynH/Anime-Girls-Holding-Programming-Books/master",
+        },
     },
     cron: {
         every6hours: "0 */6 * * *",
+        every12hours: "0 */12 * * *",
     },
     kawaiiFaces: [
         "(◠‿◠✿)",

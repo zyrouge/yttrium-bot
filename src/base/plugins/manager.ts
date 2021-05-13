@@ -3,6 +3,7 @@ import { App } from "@/base/app";
 import { CommandManager } from "@/base/plugins/commands";
 import { AnimeDatabase } from "@/base/plugins/animedb/AnimeDatabase";
 import { AnimeTopList } from "@/base/plugins/animelist/Top";
+import { AnimeGirlsHoldingProgrammingBooks } from "@/base/plugins/animegirlbooks/AnimeGirlsHoldingProgrammingBooks";
 import { CronRunner } from "@/base/plugins/cron/Runner";
 import { Constants } from "@/util";
 
@@ -18,6 +19,7 @@ export class PluginsManager {
     cacheData: Map<string, any>;
     animedb: AnimeDatabase;
     animelist: AnimeTopList;
+    animegirlsbooks: AnimeGirlsHoldingProgrammingBooks;
     cron: CronRunner;
 
     constructor(app: App, options: PluginsManagerOptions) {
@@ -28,6 +30,7 @@ export class PluginsManager {
         this.cacheData = new Map();
         this.animedb = new AnimeDatabase();
         this.animelist = new AnimeTopList();
+        this.animegirlsbooks = new AnimeGirlsHoldingProgrammingBooks();
         this.cron = new CronRunner(this.app);
     }
 
@@ -39,6 +42,12 @@ export class PluginsManager {
         const animelist = this.animelist.fetchAndUpdateDatabase.bind(
             this.animelist
         );
+
+        await this.animegirlsbooks.prepare();
+        const animegirlsbooks =
+            this.animegirlsbooks.fetchAndUpdateDatabase.bind(
+                this.animegirlsbooks
+            );
 
         this.cron.addJob(
             "ANIME_DATABASE_UPDATE",
@@ -52,7 +61,13 @@ export class PluginsManager {
             animelist
         );
 
-        [animedb, animelist].forEach((x) => {
+        this.cron.addJob(
+            "ANIME_GIRL_HOLDING_BOOKS_UPDATE",
+            Constants.cron.every12hours,
+            animegirlsbooks
+        );
+
+        [animedb, animelist, animegirlsbooks].forEach((x) => {
             try {
                 x();
             } catch (err) {}

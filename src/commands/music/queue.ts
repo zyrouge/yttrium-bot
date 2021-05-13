@@ -15,7 +15,7 @@ const fn: AppFile = (app) => {
                     name: "page",
                     alias: "p",
                     type: Number,
-                    defaultValue: null,
+                    defaultValue: 1,
                     defaultOption: true,
                     helpDesc: "Page number",
                     helpVal: "number",

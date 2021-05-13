@@ -18,7 +18,6 @@ export interface TopAnimeEntity {
     run: string;
 }
 
-export let lastUpdated: number | undefined = undefined;
 export let TopAnimeCache:
     | Record<TopAnimeTypesType | "all", TopAnimeEntity[]>
     | undefined = undefined;
