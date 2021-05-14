@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="./media">
+    <img src="./media/images/anime_blush.jpg">
 </p>
 
 # Yttrium Bot
