@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="./media">
+</p>
+
 # Yttrium Bot
 
 -   Language: [Typescript](https://www.typescriptlang.org/)
