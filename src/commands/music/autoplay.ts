@@ -58,13 +58,13 @@ const fn: AppFile = (app) => {
                 }
 
                 app.plugins.music.setAutoPlay(msg, autoplay === "enable");
-            }
 
-            return {
-                content: `${Emojis.MUSIC} | Autoplay: **${
-                    queue.autoPlay ? "Enabled" : "Disabled"
-                }**!`,
-            };
+                return {
+                    content: `${Emojis.MUSIC} | Autoplay: **${
+                        queue.autoPlay ? "Enabled" : "Disabled"
+                    }**!`,
+                };
+            }
         }
     );
 
