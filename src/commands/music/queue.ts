@@ -63,7 +63,7 @@ const fn: AppFile = (app) => {
             const songs = queue.tracks.slice(start, start + perpage);
             if (!songs.length) {
                 return {
-                    content: `${Emojis.SAD} | No songs were found on **page ${page}**!`,
+                    content: `${Emojis.SAD} | No songs were found on **page ${args.page}**!`,
                 };
             }
 
