@@ -15,6 +15,7 @@ export class App {
     options: AppOptions;
     bot: Bot;
     plugins: PluginsManager;
+    createdAt = Date.now();
 
     constructor(options: AppOptions) {
         this.options = options;

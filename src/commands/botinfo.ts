@@ -34,7 +34,7 @@ const fn: AppFile = (app) => {
                 `${Emojis.SYSTEM} System`,
                 [
                     `**Uptime**: ${Functions.humanizeDuration(
-                        Functions.parseMs(os.uptime())
+                        Functions.parseMs(Date.now() - app.createdAt)
                     )}`,
                     `**Platform**: ${Functions.capitalize(os.platform())}`,
                     `**CPU**: ${[
