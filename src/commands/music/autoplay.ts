@@ -13,9 +13,10 @@ const fn: AppFile = (app) => {
                 {
                     name: "autoplay",
                     alias: "a",
-                    type: Boolean,
+                    type: String,
+                    defaultOption: true,
                     helpDesc: "Enable/disable autoplay",
-                    helpVal: [],
+                    helpVal: ["enable", "disable"],
                     optional: true,
                 },
             ],
@@ -37,21 +38,31 @@ const fn: AppFile = (app) => {
             }
 
             const queue = app.plugins.music.getQueue(msg);
-            let autoplay = queue.autoPlay;
             if (!queue) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
             }
 
-            if (args.autoplay !== null) {
-                autoplay = !!args.autoplay;
-                app.plugins.music.setAutoPlay(msg, autoplay);
+            const options = ["enable", "disable"];
+            if (args.autoplay) {
+                const autoplay = args.autoplay.toLowerCase();
+                if (!options.includes(autoplay)) {
+                    return {
+                        content: `${
+                            Emojis.DANGER
+                        } | Invalid option! Available options: ${options
+                            .map((x) => `\`${x}\``)
+                            .join(", ")}`,
+                    };
+                }
+
+                app.plugins.music.setAutoPlay(msg, autoplay === "enable");
             }
 
             return {
                 content: `${Emojis.MUSIC} | Autoplay: **${
-                    autoplay ? "Enabled" : "Disabled"
+                    queue.autoPlay ? "Enabled" : "Disabled"
                 }**!`,
             };
         }
