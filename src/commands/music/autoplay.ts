@@ -11,8 +11,8 @@ const fn: AppFile = (app) => {
             category: "music",
             args: [
                 {
-                    name: "autoplay",
-                    alias: "a",
+                    name: "toggle",
+                    alias: "t",
                     type: Boolean,
                     helpDesc: "Enable/disable autoplay",
                     helpVal: [],
@@ -44,8 +44,8 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            if (args.autoplay !== null) {
-                autoplay = !!args.autoplay;
+            if ([true, false].includes(args.toggle)) {
+                autoplay = !!args.toggle;
                 app.plugins.music.setAutoPlay(msg, autoplay);
             }
 
