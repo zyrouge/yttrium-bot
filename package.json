@@ -39,7 +39,7 @@
     "command-line-args": "^5.1.1",
     "cron": "^1.8.2",
     "discord-player": "^4.1.0",
-    "discord.js": "github:discordjs/discord.js#master",
+    "discord.js": "discordjs/discord.js#master",
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.3.0",
     "fs-extra": "^10.0.0",

@@ -33,14 +33,16 @@ const fn: AppFile = (app) => {
 
         if (contents.includes("--help")) {
             const help = getCommandHelpEmbed(prefix, command);
-            return msg.reply({ embed: help });
+            msg.reply({ embed: help });
+            return;
         }
 
         let args: ArgsParserReturn;
         try {
             args = ArgsParser(contents, command.args);
         } catch (err) {
-            return msg.reply(`${Emojis.DANGER} | ${ArgsErrorFormatter(err)}`);
+            msg.reply(`${Emojis.DANGER} | ${ArgsErrorFormatter(err)}`);
+            return;
         }
 
         try {
@@ -53,9 +55,10 @@ const fn: AppFile = (app) => {
 
             if (res) msg.reply(res);
         } catch (err) {
-            return msg.reply(
+            msg.reply(
                 `${Emojis.DANGER} | Something went wrong while running the command! (${err})`
             );
+            return;
         }
     });
 };
