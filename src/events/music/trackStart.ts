@@ -7,7 +7,7 @@ const fn: AppFile = (app) => {
     app.plugins.music.on("trackStart", async (msg: Message, track: Track) => {
         const cacheKey = `music_msg_${msg.guild!.id}`;
         const pmsgurl: string = app.plugins.cacheData.get(cacheKey);
-        const pmsg = msg.channel.messages.cache.get(pmsgurl);
+        const pmsg = msg.channel.messages.cache.get(<`${bigint}`>pmsgurl);
         if (pmsg) {
             try {
                 if (pmsg.deletable) pmsg.delete().catch(() => {});
