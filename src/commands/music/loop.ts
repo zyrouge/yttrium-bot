@@ -2,6 +2,8 @@ import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
 import { Emojis } from "@/util";
 
+const options = ["track", "queue", "none"];
+
 const fn: AppFile = (app) => {
     const command = new Command(
         {
@@ -16,7 +18,7 @@ const fn: AppFile = (app) => {
                     type: String,
                     defaultOption: true,
                     helpDesc: "Type of loop",
-                    helpVal: ["track", "queue", "none"],
+                    helpVal: options,
                     optional: true,
                 },
             ],
@@ -44,7 +46,6 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const options = ["track", "queue", "none"];
             if (args.loop) {
                 const loop = args.loop;
                 if (!options.includes(loop)) {
@@ -59,24 +60,18 @@ const fn: AppFile = (app) => {
 
                 switch (loop) {
                     case "track":
-                    case "song":
-                    case "this":
                         queue.loopMode &&
                             app.plugins.music.setLoopMode(msg, false);
                         app.plugins.music.setRepeatMode(msg, true);
                         break;
 
-                    case "all":
                     case "queue":
-                    case "list":
                         queue.repeatMode &&
                             app.plugins.music.setRepeatMode(msg, false);
                         app.plugins.music.setLoopMode(msg, true);
                         break;
 
                     case "none":
-                    case "disable":
-                    case "off":
                         queue.loopMode &&
                             app.plugins.music.setLoopMode(msg, false);
                         queue.repeatMode &&

@@ -1,7 +1,7 @@
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
 import { EightBall } from "@/base/plugins/eightball";
-import { Colors, Emojis, Functions } from "@/util";
+import { Emojis, Functions } from "@/util";
 
 const fn: AppFile = (app) => {
     const command = new Command(
