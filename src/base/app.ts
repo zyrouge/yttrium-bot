@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs-extra";
 import { Bot, BotOptions } from "@/base/bot";
 import { PluginsManager, PluginsManagerOptions } from "@/base/plugins/manager";
+import { Database } from "@/base/database/Mongoose";
 import { Logger } from "@/util";
 
 export type AppFile = (app: App) => any;
@@ -43,6 +44,7 @@ export class App {
 
     async ready() {
         await this.bot.connect();
+        await Database.connect();
         await this.plugins.ready();
     }
 }

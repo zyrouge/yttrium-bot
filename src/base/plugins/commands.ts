@@ -42,6 +42,7 @@ export const CommandCategories = [
     "anime",
     "image",
     "fun",
+    "config",
 ] as const;
 export type CommandCategoriesType = typeof CommandCategories[number];
 

@@ -1,5 +1,6 @@
 import Discord from "discord.js";
 import { AppFile } from "@/base/app";
+import { Database } from "@/base/database/Mongoose";
 import { Constants, Emojis } from "@/util";
 import {
     ArgsParser,
@@ -12,10 +13,13 @@ const fn: AppFile = (app) => {
     app.bot.on("message", async (msg: Discord.Message) => {
         if (msg.author.bot || !msg.guild || !app.bot.user) return;
 
+        const configuredPrefix =
+            (await Database.models.guild.get(msg.guild.id))?.prefix ||
+            process.env.PREFIX;
         let prefix: string | undefined, content: string | undefined;
 
-        if (process.env.PREFIX && msg.content.startsWith(process.env.PREFIX)) {
-            prefix = process.env.PREFIX;
+        if (configuredPrefix && msg.content.startsWith(configuredPrefix)) {
+            prefix = configuredPrefix;
             content = msg.content.slice(prefix.length);
         }
 
