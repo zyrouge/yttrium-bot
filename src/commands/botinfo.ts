@@ -49,6 +49,30 @@ const fn: AppFile = (app) => {
                 ].join("\n")
             );
 
+            const lavalinkNode = app.plugins.music.nodes.first();
+            if (lavalinkNode) {
+                const stats = lavalinkNode.stats;
+                embed.addField(
+                    `${Emojis.MUSIC} Lavalink`,
+                    [
+                        `**Uptime**: ${Functions.humanizeDuration(
+                            Functions.parseMs(stats.uptime)
+                        )}`,
+                        `**CPU Cores**: ${stats.cpu.cores}`,
+                        `**Lavalink Load**: ${stats.cpu.lavalinkLoad}`,
+                        `**System Load**: ${stats.cpu.systemLoad}`,
+                        `**Memory**: ${(
+                            stats.memory.free /
+                            (1024 * 1024)
+                        ).toFixed(2)}gb left out of ${(
+                            stats.memory.allocated /
+                            (1024 * 1024)
+                        ).toFixed(2)}gb`,
+                        `**Total Players**: ${stats.players} (${stats.playingPlayers} playing)`,
+                    ].join("\n")
+                );
+            }
+
             embed.setColor(Colors.WHITE);
             embed.setTimestamp();
             embed.setImage(Constants.urls.assets.animeBlush);
