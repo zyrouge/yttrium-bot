@@ -17,7 +17,6 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
                 };
             }
-
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
@@ -27,13 +26,14 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.plugins.music.getQueue(msg);
-            if (!queue)
+            const player = app.plugins.music.get(msg.guild!.id);
+            if (!player) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
+            }
 
-            app.plugins.music.shuffle(msg);
+            player.queue.shuffle();
             return {
                 content: `${Emojis.MUSIC} | Shuffled the queue!`,
             };

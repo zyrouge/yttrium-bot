@@ -1,21 +1,19 @@
-import { Player, PlayerOptions } from "discord-player";
 import { App } from "@/base/app";
 import { CommandManager } from "@/base/plugins/commands";
 import { AnimeDatabase } from "@/base/plugins/animedb/AnimeDatabase";
 import { AnimeTopList } from "@/base/plugins/animelist/Top";
 import { AnimeGirlsHoldingProgrammingBooks } from "@/base/plugins/animegirlbooks/AnimeGirlsHoldingProgrammingBooks";
 import { CronRunner } from "@/base/plugins/cron/Runner";
+import { createMusicManager } from "@/base/plugins/music";
 import { Constants } from "@/util";
 
-export interface PluginsManagerOptions {
-    musicOptions: PlayerOptions;
-}
+export interface PluginsManagerOptions {}
 
 export class PluginsManager {
     app: App;
 
     commands: CommandManager;
-    music: Player;
+    music: ReturnType<typeof createMusicManager>;
     cacheData: Map<string, any>;
     animedb: AnimeDatabase;
     animelist: AnimeTopList;
@@ -26,7 +24,13 @@ export class PluginsManager {
         this.app = app;
 
         this.commands = new CommandManager();
-        this.music = new Player(this.app.bot, options.musicOptions);
+        this.music = createMusicManager(this.app.bot, [
+            {
+                host: process.env.LAVALINK_HOST!,
+                port: +process.env.LAVALINK_PORT!,
+                password: process.env.LAVALINK_PASSWORD!,
+            },
+        ]);
         this.cacheData = new Map();
         this.animedb = new AnimeDatabase();
         this.animelist = new AnimeTopList();

@@ -28,7 +28,6 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
                 };
             }
-
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
@@ -38,8 +37,8 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.plugins.music.getQueue(msg);
-            if (!queue) {
+            const player = app.plugins.music.get(msg.guild!.id);
+            if (!player) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
@@ -50,18 +49,17 @@ const fn: AppFile = (app) => {
                     typeof args.volume === "number" && !isNaN(args.volume)
                         ? args.volume
                         : -1;
-
                 if (vol < 0 || vol > 100) {
                     return {
                         content: `${Emojis.DANGER} | Invalid volume was provided. Volume must be between 1 and 100!`,
                     };
                 }
 
-                app.plugins.music.setVolume(msg, vol);
+                player.setVolume(vol);
             }
 
             return {
-                content: `${Emojis.MUSIC} | Volume: \`${queue.volume}%\``,
+                content: `${Emojis.MUSIC} | Volume: \`${player.volume}%\``,
             };
         }
     );

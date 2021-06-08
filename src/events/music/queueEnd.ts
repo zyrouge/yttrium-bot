@@ -1,19 +1,22 @@
-import { Message } from "discord.js";
+import { TextChannel } from "discord.js";
 import { AppFile } from "@/base/app";
-import { Emojis } from "@/util";
 
 const fn: AppFile = (app) => {
-    app.plugins.music.on("queueEnd", (msg: Message) => {
-        const cacheKey = `music_msg_${msg.guild!.id}`;
+    app.plugins.music.on("queueEnd", async (player) => {
+        const channel = <TextChannel>(
+            app.bot.channels.cache.get(<`${bigint}`>player.textChannel)
+        );
+        const cacheKey = `music_msg_${channel!.guild.id}`;
+
         const pmsgurl: string = app.plugins.cacheData.get(cacheKey);
-        const pmsg = msg.channel.messages.cache.get(<`${bigint}`>pmsgurl);
+        const pmsg = channel.messages.cache.get(<`${bigint}`>pmsgurl);
         if (pmsg) {
             try {
                 if (pmsg.deletable) pmsg.delete().catch(() => {});
             } catch (err) {}
         }
 
-        msg.channel.send(`${Emojis.MUSIC} | Queue has ended!`);
+        player.destroy();
     });
 };
 

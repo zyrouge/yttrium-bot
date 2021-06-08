@@ -13,9 +13,12 @@ const fn: AppFile = (app) => {
     app.bot.on("message", async (msg: Discord.Message) => {
         if (msg.author.bot || !msg.guild || !app.bot.user) return;
 
+        const guildPrefix =
+            process.env.NODE_ENV !== "development" &&
+            (await Database.models.guild.get(msg.guild.id))?.prefix;
+
         const configuredPrefix =
-            (await Database.models.guild.get(msg.guild.id))?.prefix ||
-            process.env.PREFIX;
+            typeof guildPrefix === "string" ? guildPrefix : process.env.PREFIX;
         let prefix: string | undefined, content: string | undefined;
 
         if (configuredPrefix && msg.content.startsWith(configuredPrefix)) {

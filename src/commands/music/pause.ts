@@ -17,7 +17,6 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
                 };
             }
-
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
@@ -26,16 +25,16 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
                 };
             }
-
-            const queue = app.plugins.music.getQueue(msg);
-            if (!queue) {
+            const player = app.plugins.music.get(msg.guild!.id);
+            if (!player) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
             }
-
-            if (app.plugins.music.pause(msg))
+            if (!player.paused) {
+                player.pause(true);
                 msg.react(Emojis.PAUSE).catch(() => {});
+            }
         }
     );
 

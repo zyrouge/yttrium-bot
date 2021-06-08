@@ -17,7 +17,6 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
                 };
             }
-
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
@@ -27,27 +26,19 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.plugins.music.getQueue(msg);
-            if (!queue) {
+            const player = app.plugins.music.players.get(msg.guild!.id);
+            if (!player) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
             }
 
-            if (queue.tracks.length <= 1) {
-                return {
-                    content: `${Emojis.DANGER} | Cannot clear the queue due to lack of tracks!`,
-                };
-            }
-
-            app.plugins.music.clearQueue(msg);
-
+            player.queue.clear();
             return {
                 content: `${Emojis.SUCCESS} | Cleared the queue!`,
             };
         }
     );
-
     app.plugins.commands.add(command);
 };
 

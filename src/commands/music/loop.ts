@@ -29,7 +29,6 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
                 };
             }
-
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
@@ -38,9 +37,8 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
                 };
             }
-
-            const queue = app.plugins.music.getQueue(msg);
-            if (!queue) {
+            const player = app.plugins.music.get(msg.guild!.id);
+            if (!player) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
@@ -57,41 +55,34 @@ const fn: AppFile = (app) => {
                             .join(", ")}`,
                     };
                 }
-
                 switch (loop) {
                     case "track":
-                        queue.loopMode &&
-                            app.plugins.music.setLoopMode(msg, false);
-                        app.plugins.music.setRepeatMode(msg, true);
+                        player.queueRepeat && player.setQueueRepeat(false);
+                        player.setTrackRepeat(true);
                         break;
 
                     case "queue":
-                        queue.repeatMode &&
-                            app.plugins.music.setRepeatMode(msg, false);
-                        app.plugins.music.setLoopMode(msg, true);
+                        player.trackRepeat && player.setTrackRepeat(false);
+                        player.setQueueRepeat(true);
                         break;
 
                     case "none":
-                        queue.loopMode &&
-                            app.plugins.music.setLoopMode(msg, false);
-                        queue.repeatMode &&
-                            app.plugins.music.setRepeatMode(msg, false);
+                        player.queueRepeat && player.setQueueRepeat(false);
+                        player.trackRepeat && player.setTrackRepeat(false);
                         break;
                 }
             }
-
             return {
                 content: `${Emojis.MUSIC} | Currently Looping: **${
-                    queue.repeatMode
+                    player.trackRepeat
                         ? "track"
-                        : queue.loopMode
+                        : player.queueRepeat
                         ? "queue"
                         : "none"
                 }**!`,
             };
         }
     );
-
     app.plugins.commands.add(command);
 };
 

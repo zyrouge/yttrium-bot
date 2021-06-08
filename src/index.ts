@@ -4,11 +4,12 @@ import dotenv from "dotenv";
 import path from "path";
 import { Intents } from "discord.js";
 import { App } from "@/base/app";
-import HttpStreams from "@/base/plugins/music/HttpStreams";
 import { Logger } from "./util";
 
 const start = async () => {
-    dotenv.config();
+    dotenv.config({
+        path: path.join(__dirname, "..", ".env"),
+    });
 
     if (!process.env.TOKEN) throw new Error("Missing 'process.env.TOKEN'");
 
@@ -28,26 +29,11 @@ const start = async () => {
                 },
             },
         },
-        pluginOptions: {
-            musicOptions: {
-                ytdlDownloadOptions: {
-                    requestOptions: {
-                        headers: {
-                            cookie: process.env.YT_COOKIE,
-                        },
-                    },
-                    quality: "highestaudio",
-                    filter: (format) => {
-                        return format.hasAudio && !!format.audioBitrate;
-                    },
-                },
-            },
-        },
+        pluginOptions: {},
     });
 
     await app.dir(path.join(__dirname, "events"));
     await app.dir(path.join(__dirname, "commands"));
-    app.plugins.music.use("URL_STREAM", HttpStreams);
 
     await app.ready();
     Logger.info(`Application loaded successfully!`);

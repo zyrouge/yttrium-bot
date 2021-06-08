@@ -18,7 +18,6 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
                 };
             }
-
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
@@ -27,40 +26,39 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in the same Voice Channel to use this command!`,
                 };
             }
-
-            const queue = app.plugins.music.getQueue(msg);
-            const track = app.plugins.music.nowPlaying(msg);
-            if (!queue || !track) {
+            const player = app.plugins.music.get(msg.guild!.id);
+            const track = player?.queue.current;
+            if (!player || !track) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
             }
-
             const embed = new MessageEmbed();
-
             embed.setTitle(`${Emojis.MUSIC} | Now Playing`);
             embed.setDescription(
                 [
-                    `**Title**: [${track.title}](${track.url})`,
-                    `**Requested by**: <@${track.requestedBy.id}>`,
+                    `**Title**: [${track.title}](${track.uri})`,
+                    `**Requested by**: <@${track.requester}>`,
                 ].join("\n")
             );
-            embed.addField(
-                "** **",
-                app.plugins.music.createProgressBar(msg, { timecodes: true })
-            );
-            embed.setThumbnail(track.thumbnail);
+            // embed.addField(
+            //     "** **",
+            //     app.plugins.music.createProgressBar(msg, { timecodes: true })
+            // );
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);
             embed.setFooter(
                 `Looping: ${
-                    queue.repeatMode
+                    player.trackRepeat
                         ? "Track"
-                        : queue.loopMode
+                        : player.queueRepeat
                         ? "Queue"
                         : "None"
                 }`
             );
+
+            const thumb = track.displayThumbnail?.();
+            if (thumb) embed.setThumbnail(thumb);
 
             return { embed };
         }

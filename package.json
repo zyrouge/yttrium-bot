@@ -5,8 +5,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node . | pino-pretty",
-    "dev": "npm run build && node . | pino-pretty",
+    "start": " cross-env NODE_ENV=\"production\" node . | pino-pretty",
+    "dev": "npm run build && cross-env NODE_ENV=\"development\" node . | pino-pretty",
     "build": "node scripts/prebuild && tsc && node scripts/postbuild",
     "postinstall": "npm run build"
   },
@@ -38,9 +38,10 @@
     "cheerio": "^1.0.0-rc.9",
     "command-line-args": "^5.1.1",
     "cron": "^1.8.2",
-    "discord-player": "^4.1.0",
+    "cross-env": "^7.0.3",
     "discord.js": "discordjs/discord.js#master",
     "dotenv": "^8.2.0",
+    "erela.js": "^2.3.3",
     "ffmpeg-static": "^4.3.0",
     "fs-extra": "^10.0.0",
     "module-alias": "^2.2.2",

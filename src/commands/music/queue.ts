@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Colors, Emojis } from "@/util";
+import { Colors, Emojis, Functions } from "@/util";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -29,7 +29,6 @@ const fn: AppFile = (app) => {
                     content: `${Emojis.DANGER} | You must be in a Voice Channel to use this command!`,
                 };
             }
-
             if (
                 msg.guild?.me?.voice.channel &&
                 msg.member.voice.channel.id !== msg.guild.me.voice.channel.id
@@ -39,15 +38,14 @@ const fn: AppFile = (app) => {
                 };
             }
 
-            const queue = app.plugins.music.getQueue(msg);
-            if (!queue) {
+            const player = app.plugins.music.get(msg.guild!.id);
+            if (!player) {
                 return {
                     content: `${Emojis.DANGER} | Nothing is being played right now!`,
                 };
             }
 
             const embed = new MessageEmbed();
-
             embed.setTitle(`${Emojis.MUSIC} | Current queue`);
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);
@@ -60,36 +58,46 @@ const fn: AppFile = (app) => {
 
             const perpage = 5;
             const start = page * perpage;
-            const songs = queue.tracks.slice(start, start + perpage);
+            const songs = player.queue.slice(start, start + perpage);
             if (!songs.length) {
                 return {
                     content: `${Emojis.SAD} | No songs were found on **page ${args.page}**!`,
                 };
             }
 
-            const np = app.plugins.music.nowPlaying(msg);
-            if (np)
-                if (np)
-                    embed.addField(
-                        `${Emojis.SOUND} Now playing`,
-                        `**[${np.title}](${np.url})** [${np.duration}] (<@${np.requestedBy.id}>)`
+            const pretty = (t: typeof player.queue[0]) => {
+                const content: string[] = [t.title];
+
+                if (t.duration) {
+                    content.push(
+                        `[${Functions.humanizeDuration(
+                            Functions.parseMs(t.duration)
+                        )}]`
                     );
+                }
+
+                if (t.requester) {
+                    content.push(`(<@${t.requester}>)`);
+                }
+
+                return content.join(" ");
+            };
+
+            const np = player.queue.current;
+            if (np) {
+                embed.addField(`${Emojis.SOUND} Now playing`, pretty(np));
+            }
 
             embed.setDescription(
                 songs
-                    .map(
-                        (x, i) =>
-                            `${i + 1 + start}. **[${x.title}](${x.url})** [${
-                                x.duration
-                            }] (<@${x.requestedBy.id}>)`
-                    )
+                    .filter((x) => x)
+                    .map((x, i) => `${i + 1 + start}. ${pretty(x)}`)
                     .join("\n") + (np ? "\n\n** **" : "")
             );
-
             embed.setFooter(
                 `Page: ${page + 1}/${Math.ceil(
-                    queue.tracks.length / perpage
-                )} | Total tracks: ${queue.tracks.length}`
+                    player.queue.length / perpage
+                )} | Total tracks: ${player.queue.length}`
             );
 
             return { embed };
