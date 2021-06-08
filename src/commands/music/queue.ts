@@ -51,15 +51,17 @@ const fn: AppFile = (app) => {
             embed.setColor(Colors.BLUE);
 
             const page = args.page - 1;
-            if (isNaN(page) || page < 0)
+            if (isNaN(page) || page < 0) {
                 return {
                     content: `${Emojis.DANGER} | Invalid page number!`,
                 };
+            }
 
             const perpage = 5;
             const start = page * perpage;
             const songs = player.queue.slice(start, start + perpage);
-            if (!songs.length) {
+            const np = player.queue.current;
+            if (!songs.length && !np) {
                 return {
                     content: `${Emojis.SAD} | No songs were found on **page ${args.page}**!`,
                 };
@@ -83,22 +85,24 @@ const fn: AppFile = (app) => {
                 return content.join(" ");
             };
 
-            const np = player.queue.current;
             if (np) {
                 embed.addField(`${Emojis.SOUND} Now playing`, pretty(np));
             }
 
-            embed.setDescription(
-                songs
-                    .filter((x) => x)
-                    .map((x, i) => `${i + 1 + start}. ${pretty(x)}`)
-                    .join("\n") + (np ? "\n\n** **" : "")
-            );
-            embed.setFooter(
-                `Page: ${page + 1}/${Math.ceil(
-                    player.queue.length / perpage
-                )} | Total tracks: ${player.queue.length}`
-            );
+            if (songs.length) {
+                embed.setDescription(
+                    songs
+                        .filter((x) => x)
+                        .map((x, i) => `${i + 1 + start}. ${pretty(x)}`)
+                        .join("\n") + (np ? "\n\n** **" : "")
+                );
+
+                embed.setFooter(
+                    `Page: ${page + 1}/${Math.ceil(
+                        player.queue.length / perpage
+                    )} | Total tracks: ${player.queue.length}`
+                );
+            }
 
             return { embed };
         }
