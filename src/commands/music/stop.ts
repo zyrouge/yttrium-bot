@@ -34,6 +34,8 @@ const fn: AppFile = (app) => {
 
             player.queue.clear();
             player.stop();
+            player.disconnect();
+            player.destroy();
             msg.react(Emojis.SUCCESS).catch(() => {});
         }
     );

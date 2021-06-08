@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Colors, Emojis } from "@/util";
+import { Colors, Emojis, Functions } from "@/util";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -41,10 +41,26 @@ const fn: AppFile = (app) => {
                     `**Requested by**: <@${track.requester}>`,
                 ].join("\n")
             );
-            // embed.addField(
-            //     "** **",
-            //     app.plugins.music.createProgressBar(msg, { timecodes: true })
-            // );
+
+            if (track.duration) {
+                const dura = (dur: number) =>
+                    Functions.humanizeDuration(Functions.parseMs(dur));
+                const max = 10;
+                const count = Math.floor(
+                    (player.position / track.duration) * max
+                );
+                const bar = "▬",
+                    dot = "🔘";
+                embed.addField(
+                    "** **",
+                    `${dura(player.position)} ${bar.repeat(
+                        count
+                    )}${dot}${bar.repeat(max - count)} ${dura(
+                        track.duration
+                    )} (${(player.position / track.duration) * 100}%)`
+                );
+            }
+
             embed.setTimestamp();
             embed.setColor(Colors.BLUE);
             embed.setFooter(
@@ -57,7 +73,7 @@ const fn: AppFile = (app) => {
                 }`
             );
 
-            const thumb = track.displayThumbnail?.();
+            const thumb = track.thumbnail || track.displayThumbnail?.();
             if (thumb) embed.setThumbnail(thumb);
 
             return { embed };

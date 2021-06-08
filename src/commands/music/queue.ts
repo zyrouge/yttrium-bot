@@ -68,7 +68,7 @@ const fn: AppFile = (app) => {
             }
 
             const pretty = (t: typeof player.queue[0]) => {
-                const content: string[] = [t.title];
+                const content: string[] = [`**[${t.title}](${t.uri})**`];
 
                 if (t.duration) {
                     content.push(

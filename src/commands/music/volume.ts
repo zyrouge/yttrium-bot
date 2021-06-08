@@ -59,7 +59,7 @@ const fn: AppFile = (app) => {
             }
 
             return {
-                content: `${Emojis.MUSIC} | Volume: \`${player.volume}%\``,
+                content: `${Emojis.MUSIC} | Volume: **${player.volume}%**`,
             };
         }
     );
