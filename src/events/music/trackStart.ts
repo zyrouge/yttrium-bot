@@ -30,6 +30,9 @@ const fn: AppFile = (app) => {
             )
             .setColor(Colors.BLUE);
 
+        const thumb = track.thumbnail || track.displayThumbnail?.();
+        if (thumb) embed.setThumbnail(thumb);
+
         const nmsg = await channel.send({ embed });
         app.plugins.cacheData.set(cacheKey, nmsg.id);
     });

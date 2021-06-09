@@ -59,8 +59,12 @@ const fn: AppFile = (app) => {
                             Functions.parseMs(stats.uptime)
                         )}`,
                         `**CPU Cores**: ${stats.cpu.cores}`,
-                        `**Lavalink Load**: ${stats.cpu.lavalinkLoad}`,
-                        `**System Load**: ${stats.cpu.systemLoad}`,
+                        `**Lavalink Load**: ${Math.floor(
+                            stats.cpu.lavalinkLoad * 100
+                        )}%`,
+                        `**System Load**: ${Math.floor(
+                            stats.cpu.systemLoad * 100
+                        )}%`,
                         `**Memory**: ${(
                             stats.memory.free /
                             (1024 * 1024)

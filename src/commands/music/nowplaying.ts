@@ -57,7 +57,9 @@ const fn: AppFile = (app) => {
                         count
                     )}${dot}${bar.repeat(max - count)} ${dura(
                         track.duration
-                    )} (${(player.position / track.duration) * 100}%)`
+                    )} (${Math.floor(
+                        (player.position / track.duration) * 100
+                    )}%)`
                 );
             }
 
