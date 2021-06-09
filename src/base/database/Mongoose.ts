@@ -23,11 +23,10 @@ export class ModelManager<T> {
     }
 
     async set(id: string, keys: mongoose.UpdateQuery<T>) {
-        const updated = await this.model.findByIdAndUpdate(id, keys, {
-            upsert: true,
-            new: true,
-            setDefaultsOnInsert: true,
-        });
+        const updated = (await this.model.findById(id)) || new this.model();
+        updated._id = id;
+        Object.assign(updated, keys);
+        await updated.save();
         this.cache.set(id, updated);
         return updated;
     }
