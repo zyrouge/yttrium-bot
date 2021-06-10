@@ -151,6 +151,7 @@ const fn: AppFile = (app) => {
                 guild: msg.guild!.id,
                 voiceChannel: msg.member.voice.channel.id,
                 textChannel: msg.channel.id,
+                volume: 60,
             });
 
             if (!["CONNECTED", "CONNECTING"].includes(player.state)) {
