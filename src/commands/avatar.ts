@@ -27,7 +27,7 @@ const fn: AppFile = (app) => {
                     msg.mentions.users.first() ||
                     (<string>args.user &&
                         (await app.bot.users
-                            .fetch(<`${bigint}`>args.user.join(" "))
+                            .fetch(<`${bigint}`>args.user)
                             .catch(() => null))) ||
                     msg.author;
 
