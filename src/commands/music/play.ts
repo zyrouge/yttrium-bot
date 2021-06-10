@@ -152,6 +152,7 @@ const fn: AppFile = (app) => {
                 voiceChannel: msg.member.voice.channel.id,
                 textChannel: msg.channel.id,
                 volume: 60,
+                selfDeafen: true,
             });
 
             if (!["CONNECTED", "CONNECTING"].includes(player.state)) {

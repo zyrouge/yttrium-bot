@@ -15,7 +15,6 @@ const fn: AppFile = (app) => {
                     alias: "v",
                     type: Number,
                     defaultOption: true,
-                    defaultValue: null,
                     helpDesc: "Volume to be set",
                     helpVal: "1-100",
                     optional: true,
