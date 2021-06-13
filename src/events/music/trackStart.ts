@@ -7,10 +7,10 @@ const fn: AppFile = (app) => {
         const channel = <TextChannel>(
             app.bot.channels.cache.get(<`${bigint}`>player.textChannel)
         );
-        const cacheKey = `music_msg_${channel!.guild.id}`;
 
-        const pmsgurl: string = app.plugins.cacheData.get(cacheKey);
-        const pmsg = channel.messages.cache.get(<`${bigint}`>pmsgurl);
+        const pmsg =
+            player.lastMessageID &&
+            channel.messages.cache.get(<`${bigint}`>player.lastMessageID);
         if (pmsg) {
             try {
                 if (pmsg.deletable) pmsg.delete().catch(() => {});
@@ -34,7 +34,7 @@ const fn: AppFile = (app) => {
         if (thumb) embed.setThumbnail(thumb);
 
         const nmsg = await channel.send({ embed });
-        app.plugins.cacheData.set(cacheKey, nmsg.id);
+        player.lastMessageID = nmsg.id;
     });
 };
 

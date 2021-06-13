@@ -14,7 +14,6 @@ export class PluginsManager {
 
     commands: CommandManager;
     music: ReturnType<typeof createMusicManager>;
-    cacheData: Map<string, any>;
     animedb: AnimeDatabase;
     animelist: AnimeTopList;
     animegirlsbooks: AnimeGirlsHoldingProgrammingBooks;
@@ -31,7 +30,6 @@ export class PluginsManager {
                 password: process.env.LAVALINK_PASSWORD!,
             },
         ]);
-        this.cacheData = new Map();
         this.animedb = new AnimeDatabase();
         this.animelist = new AnimeTopList();
         this.animegirlsbooks = new AnimeGirlsHoldingProgrammingBooks();
