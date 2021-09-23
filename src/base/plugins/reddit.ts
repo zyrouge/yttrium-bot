@@ -1,6 +1,9 @@
+import { Assets } from "@/utils/assets";
+import { Colors } from "@/utils/colors";
+import { RegExpUtils } from "@/utils/regex";
+import { StringUtils } from "@/utils/string";
 import axios from "axios";
 import { MessageEmbed } from "discord.js";
-import { Colors, Constants, Functions } from "@/util";
 
 export interface RedditOptions {
     image?: boolean;
@@ -25,15 +28,12 @@ export interface RedditPost {
     nsfw: boolean;
 }
 
-export const Reddit = async (
-    subreddit: string,
-    options: RedditOptions = {}
-) => {
-    options.image = options.image || true;
-    options.nsfw = options.nsfw || false;
+export const Reddit = {
+    async fetch(subreddit: string, options: RedditOptions = {}) {
+        options.image = options.image || true;
+        options.nsfw = options.nsfw || false;
 
-    const base = `https://api.reddit.com/r/${subreddit}/random`;
-    try {
+        const base = `https://api.reddit.com/r/${subreddit}/random`;
         const { data } = await axios.get(base, {
             responseType: "json",
         });
@@ -54,12 +54,12 @@ export const Reddit = async (
             post.crosspost_parent_list &&
             post.crosspost_parent_list.secure_media &&
             post.crosspost_parent_list.secure_media.thumbnail_url &&
-            Constants.regex.url.test(
+            RegExpUtils.url.test(
                 post.crosspost_parent_list.secure_media.thumbnail_url
             )
         )
             image = post.crosspost_parent_list.secure_media.thumbnail_url;
-        if (post.url && Constants.regex.url.test(post.url)) image = post.url;
+        if (post.url && RegExpUtils.url.test(post.url)) image = post.url;
 
         const result: RedditPost = {
             title: post.title,
@@ -72,7 +72,7 @@ export const Reddit = async (
             url: `https://reddit.com${post.permalink}`,
             image,
             thumbnail:
-                post.thumbnail && Constants.regex.url.test(post.thumbnail)
+                post.thumbnail && RegExpUtils.url.test(post.thumbnail)
                     ? post.thumbnail
                     : undefined,
             score: post.score || undefined,
@@ -83,25 +83,22 @@ export const Reddit = async (
         };
 
         return result;
-    } catch (err) {
-        throw err;
-    }
-};
+    },
+    embedify(post: RedditPost) {
+        const embed = new MessageEmbed();
+        embed.setTitle(StringUtils.shorten(post.title, 500));
 
-export const getRedditEmbed = (post: RedditPost) => {
-    const embed = new MessageEmbed();
-    embed.setTitle(Functions.shorten(post.title, 500));
+        if (post.url) embed.setURL(post.url);
+        if (post.image || post.thumbnail)
+            embed.setImage(post.image || post.thumbnail);
 
-    if (post.url) embed.setURL(post.url);
-    if (post.image || post.thumbnail)
-        embed.setImage(post.image || post.thumbnail);
+        embed.setColor(Colors.REDDIT_ORANGE);
+        embed.setTimestamp();
+        embed.setFooter(
+            `${post.subreddit.subreddit} | 👍 ${post.likes} | 👎 ${post.dislikes}`,
+            Assets.reddit
+        );
 
-    embed.setColor(Colors.REDDIT_ORANGE);
-    embed.setTimestamp();
-    embed.setFooter(
-        `${post.subreddit.subreddit} | 👍 ${post.likes} | 👎 ${post.dislikes}`,
-        Constants.urls.assets.reddit
-    );
-
-    return embed;
+        return embed;
+    },
 };

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { Intents } from "discord.js";
 import { App } from "@/base/app";
-import { Logger } from "./util";
+import { Logger } from "@/utils/logger";
 
 const start = async () => {
     dotenv.config({

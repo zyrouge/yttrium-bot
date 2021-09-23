@@ -1,7 +1,8 @@
 import util from "util";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Emojis, Functions } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { StringUtils } from "@/utils/string";
 
 if (!process.env.OWNERS) throw new Error("Missing 'process.env.OWNERS'");
 const Owners: string[] = process.env.OWNERS.split(",");
@@ -43,21 +44,21 @@ const fn: AppFile = (app) => {
                 }
 
                 if (typeof evaled !== "string") evaled = util.inspect(evaled);
-                evaled = Functions.clean(evaled);
+                evaled = StringUtils.clean(evaled);
 
                 return {
                     content: `${Emojis.SUCCESS} | **Success** ${respTags
                         .map((x) => `(${x})`)
-                        .join(" ")}\n\`\`\`xl\n${Functions.shorten(
+                        .join(" ")}\n\`\`\`xl\n${StringUtils.shorten(
                         evaled,
                         1900
                     )}\`\`\``,
                 };
-            } catch (err) {
+            } catch (err: any) {
                 return {
                     content: `${
                         Emojis.DANGER
-                    } | **Error**\n\`\`\`xl\n${Functions.shorten(
+                    } | **Error**\n\`\`\`xl\n${StringUtils.shorten(
                         err.toString(),
                         1000
                     )}\`\`\``,

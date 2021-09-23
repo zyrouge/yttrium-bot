@@ -1,7 +1,8 @@
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Emojis, Constants, Colors } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { Colors } from "@/utils/colors";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -25,7 +26,7 @@ const fn: AppFile = (app) => {
                 embed.setColor(Colors.PURPLE);
                 embed.setTimestamp();
                 embed.setFooter(
-                    `Source: ${Constants.urls.animeGirlsHoldingProgrammingBooks.base}`
+                    `Source: ${app.plugins.animegirlsbooks.endpoint.base}`
                 );
 
                 return { embed };

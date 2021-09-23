@@ -2,7 +2,10 @@ import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
 import { TopAnimeTypes, TopAnimeTypesType } from "@/base/plugins/animelist/Top";
-import { Emojis, Constants, Functions, Colors } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { StringUtils } from "@/utils/string";
+import { Http } from "@/utils/http";
+import { Colors } from "@/utils/colors";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -19,7 +22,7 @@ const fn: AppFile = (app) => {
                     defaultValue: null,
                     defaultOption: true,
                     helpDesc: "Anime category",
-                    helpVal: (TopAnimeTypes as any) as string[],
+                    helpVal: TopAnimeTypes as any as string[],
                     optional: true,
                 },
                 {
@@ -55,7 +58,7 @@ const fn: AppFile = (app) => {
                 embed.setTitle(
                     `${
                         Emojis.WHITE_FLOWER
-                    } | Top animes (${Functions.capitalize(type || "all")})`
+                    } | Top animes (${StringUtils.capitalize(type || "all")})`
                 );
 
                 const page =
@@ -78,10 +81,10 @@ const fn: AppFile = (app) => {
                         name: `#${x.rank} - ${x.title}`,
                         value: [
                             `**Score**: ${x.score}`,
-                            `**Type**: ${Functions.capitalize(x.series)}`,
+                            `**Type**: ${StringUtils.capitalize(x.series)}`,
                             `**Aired**: ${x.run}`,
-                            `**Link**: [${Functions.getHostFromURL(
-                                Constants.urls.animeList.base
+                            `**Link**: [${Http.parseHost(
+                                app.plugins.animelist.endpoint.base
                             )}](${x.url})`,
                         ].join("\n"),
                     }))
@@ -92,7 +95,7 @@ const fn: AppFile = (app) => {
                 embed.setFooter(
                     `Page: ${page + 1}/${Math.ceil(
                         all.length / itemsPerPage
-                    )} | Source: ${Constants.urls.animeList.base}`
+                    )} | Source: ${app.plugins.animelist.endpoint.base}`
                 );
 
                 return { embed };

@@ -2,26 +2,32 @@ import axios from "axios";
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Colors, Constants, Emojis, Functions } from "@/util";
+import { ArrayUtils } from "@/utils/array";
+import { kawaiiFaces } from "@/utils/emoticons";
+import { Http } from "@/utils/http";
+import { Colors } from "@/utils/colors";
+import { Emojis } from "@/utils/emojis";
+
+const someRandomAPI = {
+    wink: "https://some-random-api.ml/animu/wink",
+};
 
 const fn: AppFile = (app) => {
     const responses: Record<
-        keyof typeof Constants.urls.someRandomAPI,
+        keyof typeof someRandomAPI,
         (u1: string, ...un: string[]) => string
     > = {
         wink: (u1: string, ...un: string[]) =>
-            `${Functions.random(
-                Constants.kawaiiFaces
-            )} ${u1} winks at ${un.join(", ")}!`,
+            `${ArrayUtils.random(kawaiiFaces)} ${u1} winks at ${un.join(
+                ", "
+            )}!`,
     };
 
-    Object.entries(Constants.urls.someRandomAPI).forEach(([key, url]) => {
+    Object.entries(someRandomAPI).forEach(([key, url]) => {
         const command = new Command(
             {
                 name: key,
-                description: `${Functions.random(
-                    Constants.kawaiiFaces
-                )} Anime reaction`,
+                description: `${ArrayUtils.random(kawaiiFaces)} Anime reaction`,
                 aliases: [],
                 category: "anime",
                 args: [
@@ -48,9 +54,7 @@ const fn: AppFile = (app) => {
 
                     const embed = new MessageEmbed();
                     const response =
-                        responses[
-                            key as keyof typeof Constants.urls.someRandomAPI
-                        ];
+                        responses[key as keyof typeof someRandomAPI];
                     embed.setDescription(
                         response(
                             `<@${msg.author.id}>`,
@@ -60,7 +64,7 @@ const fn: AppFile = (app) => {
                     embed.setImage(data.link);
                     embed.setColor(Colors.PINK);
                     embed.setTimestamp();
-                    embed.setFooter(`Source: ${Functions.getHostFromURL(url)}`);
+                    embed.setFooter(`Source: ${Http.parseHost(url)}`);
 
                     return { embed };
                 } catch (err) {

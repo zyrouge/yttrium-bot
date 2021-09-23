@@ -1,7 +1,10 @@
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Emojis, Constants, Functions, Colors } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { Colors } from "@/utils/colors";
+import { StringUtils } from "@/utils/string";
+import { Http } from "@/utils/http";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -57,23 +60,20 @@ const fn: AppFile = (app) => {
                             `**Title**: ${anime.title}`,
                             `**Episodes**: ${
                                 anime.episodes
-                            } (${Functions.capitalize(anime.status)})`,
+                            } (${StringUtils.capitalize(anime.status)})`,
                             `**Season**: ${
                                 anime.animeSeason.season === "UNDEFINED"
                                     ? "Unknown"
-                                    : Functions.capitalize(
+                                    : StringUtils.capitalize(
                                           anime.animeSeason.season
                                       )
                             }`,
                             `**Aired year**: ${anime.animeSeason.year}`,
                             `**Sources**: ${anime.sources
                                 .slice(0, 3)
-                                .map(
-                                    (x) =>
-                                        `[${Functions.getHostFromURL(x)}](${x})`
-                                )
+                                .map((x) => `[${Http.parseHost(x)}](${x})`)
                                 .join(", ")}`,
-                            `**Tags**: ${Functions.shorten(
+                            `**Tags**: ${StringUtils.shorten(
                                 anime.tags.join(", "),
                                 500
                             )}`,
@@ -83,7 +83,7 @@ const fn: AppFile = (app) => {
                     embed.setImage(anime.picture);
                     embed.setTimestamp();
                     embed.setFooter(
-                        `Source: ${Constants.urls.animeOfflineDatabase.base}`
+                        `Source: ${app.plugins.animedb.endpoint.base}`
                     );
 
                     return { embed };

@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import { Bot, BotOptions } from "@/base/bot";
 import { PluginsManager, PluginsManagerOptions } from "@/base/plugins/manager";
 import { Database } from "@/base/database/Mongoose";
-import { Logger } from "@/util";
+import { Logger } from "@/utils/logger";
 
 export type AppFile = (app: App) => any;
 

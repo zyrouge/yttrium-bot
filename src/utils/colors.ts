@@ -1,0 +1,8 @@
+export const Colors = {
+    YELLOW: 16767232,
+    BLUE: 5940704,
+    WHITE: 16711679,
+    PURPLE: 14091260,
+    PINK: 16711935,
+    REDDIT_ORANGE: 16733952,
+};

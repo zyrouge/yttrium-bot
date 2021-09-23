@@ -1,12 +1,10 @@
 import { Message } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command, CommandRun } from "@/base/plugins/commands";
-import {
-    Reddit,
-    RedditPost,
-    getRedditEmbed,
-} from "@/base/plugins/reddit/Reddit";
-import { Emojis, Functions } from "@/util";
+import { Reddit, RedditPost } from "@/base/plugins/reddit";
+import { Emojis } from "@/utils/emojis";
+import { ArrayUtils } from "@/utils/array";
+import { PromiseUtils } from "@/utils/promise";
 
 const fn: AppFile = (app) => {
     const run = async (
@@ -16,17 +14,15 @@ const fn: AppFile = (app) => {
         try {
             msg.react(Emojis.TIMER).catch(() => {});
 
-            let post: RedditPost;
-            try {
-                post = await Reddit(reddit);
-            } catch (err) {
+            const [err, post] = await PromiseUtils.await(Reddit.fetch(reddit));
+            if (!post) {
                 return {
                     content: `${Emojis.SAD} | Unable to fetch the subreddit! (${err})`,
                 };
             }
 
-            const embed = getRedditEmbed(post);
-            return { embed };
+            const embed = Reddit.embedify(post);
+            return { embeds: [embed] };
         } catch (err) {
             return {
                 content: `${Emojis.DANGER} | Something went wrong! (${err})`,
@@ -100,7 +96,7 @@ const fn: AppFile = (app) => {
         delete props.reddit;
 
         const cmd = new Command(props, ({ msg }) =>
-            run(msg, Functions.random(reddits))
+            run(msg, ArrayUtils.random(reddits))
         );
 
         app.plugins.commands.add(cmd);

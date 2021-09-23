@@ -1,6 +1,7 @@
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Colors, Emojis } from "@/util";
+import { Colors } from "@/utils/colors";
+import { Emojis } from "@/utils/emojis";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -27,7 +28,7 @@ const fn: AppFile = (app) => {
                     msg.mentions.users.first() ||
                     (<string>args.user &&
                         (await app.bot.users
-                            .fetch(<`${bigint}`>args.user)
+                            .fetch(args.user)
                             .catch(() => null))) ||
                     msg.author;
 

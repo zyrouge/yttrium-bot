@@ -1,13 +1,14 @@
 import Discord from "discord.js";
 import { AppFile } from "@/base/app";
 import { Database } from "@/base/database/Mongoose";
-import { Constants, Emojis } from "@/util";
 import {
     ArgsParser,
     ArgsParserReturn,
     ArgsErrorFormatter,
     getCommandHelpEmbed,
 } from "@/base/plugins/commands";
+import { RegExpUtils } from "@/utils/regex";
+import { Emojis } from "@/utils/emojis";
 
 const fn: AppFile = (app) => {
     app.bot.on("message", async (msg: Discord.Message) => {
@@ -26,7 +27,7 @@ const fn: AppFile = (app) => {
             content = msg.content.slice(prefix.length);
         }
 
-        const mentionPrefix = Constants.regex.discordMention(app.bot.user.id);
+        const mentionPrefix = RegExpUtils.discordMention(app.bot.user.id);
         if (app.bot.user && mentionPrefix.test(msg.content)) {
             prefix = `@${app.bot.user.username} `;
             content = msg.content.replace(mentionPrefix, "").trim();
@@ -40,7 +41,7 @@ const fn: AppFile = (app) => {
 
         if (contents.includes("--help")) {
             const help = getCommandHelpEmbed(prefix, command);
-            msg.reply({ embed: help });
+            msg.reply({ embeds: [help] });
             return;
         }
 

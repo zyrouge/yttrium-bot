@@ -1,7 +1,9 @@
 import { search, SearchSongEnitity, getTrack } from "azlyrics-ext";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Constants, Emojis, Functions } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { Duration } from "@/utils/duration";
+import { PromiseUtils } from "@/utils/promise";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -34,21 +36,15 @@ const fn: AppFile = (app) => {
                 msg.react(Emojis.SEARCH).catch(() => {});
 
                 const terms = args.terms.join(" ");
-                let song: SearchSongEnitity | undefined;
-                try {
-                    song = (await search(terms))?.[0];
-                } catch (err) {}
+                const [, [song] = []] = await PromiseUtils.await(search(terms));
                 if (!song) {
                     return {
                         content: `${Emojis.SAD} | Couldn't find the song!`,
                     };
                 }
 
-                let lyrics: string | undefined;
-                try {
-                    lyrics = (await getTrack(song.url)).lyrics;
-                } catch (err) {}
-                if (!lyrics?.length) {
+                const [, track] = await PromiseUtils.await(getTrack(song.url));
+                if (!track?.lyrics.length) {
                     return {
                         content: `${Emojis.SAD} | Couldn't find lyrics of the song!`,
                     };
@@ -59,7 +55,7 @@ const fn: AppFile = (app) => {
                     `${Emojis.MUSIC} | Lyrics of **${song.title}** by **${song.artist}**\n\n`,
                 ];
 
-                lyrics
+                track.lyrics
                     .split("\n")
                     .filter((x) => !x.startsWith("[") && !x.endsWith("]"))
                     .forEach((line) => {
@@ -76,7 +72,7 @@ const fn: AppFile = (app) => {
 
                 for (const page of pages) {
                     msg.reply(page);
-                    await Functions.sleep(250);
+                    await Duration.sleep(250);
                 }
             } catch (err) {
                 return {

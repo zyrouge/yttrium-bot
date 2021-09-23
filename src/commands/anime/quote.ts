@@ -2,7 +2,11 @@ import { MessageEmbed } from "discord.js";
 import axios from "axios";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Emojis, Constants } from "@/util";
+import { Emojis } from "@/utils/emojis";
+
+const animeQuote = {
+    random: "https://animechan.vercel.app/api/random",
+};
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -20,7 +24,7 @@ const fn: AppFile = (app) => {
                     anime: string;
                     character: string;
                     quote: string;
-                }>(Constants.urls.animeQuote.random, {
+                }>(animeQuote.random, {
                     responseType: "json",
                 });
 

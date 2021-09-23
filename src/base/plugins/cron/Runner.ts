@@ -1,6 +1,7 @@
 import { CronJob } from "cron";
 import { App } from "@/base/app";
-import { Logger } from "@/util";
+import { Logger } from "@/utils/logger";
+import { PromiseUtils } from "@/utils/promise";
 
 export interface PreScheduledJobEnitity {
     time: string;
@@ -26,9 +27,7 @@ export class CronRunner {
             time,
             () => {
                 Logger.info(`Started CronJob: ${name} [${time}]!`);
-                try {
-                    fn();
-                } catch (err) {}
+                PromiseUtils.awaitFn(fn);
             },
             () => {
                 Logger.info(`Finished CronJob: ${name} [${time}]!`);

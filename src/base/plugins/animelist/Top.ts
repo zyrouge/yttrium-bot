@@ -3,7 +3,10 @@ import fs from "fs-extra";
 import axios from "axios";
 import cheerio from "cheerio";
 import { getCacheInfo, updateCacheInfo } from "@/base/database/CacheInfoFile";
-import { Constants, Functions, Logger } from "@/util";
+import { Paths } from "@/utils/paths";
+import { Logger } from "@/utils/logger";
+import { Duration } from "@/utils/duration";
+import { PromiseUtils } from "@/utils/promise";
 
 export interface TopAnimesOptions {
     type?: TopAnimeTypesType;
@@ -36,7 +39,7 @@ export const TopAnimeTypes = [
 export type TopAnimeTypesType = typeof TopAnimeTypes[number];
 
 export class AnimeTopList {
-    dataDir = path.join(Constants.paths.data, "animelist", "top");
+    dataDir = path.join(Paths.data, "animelist", "top");
     dbPath = path.join(this.dataDir, "top.json");
     cacheInfoPath = path.join(this.dataDir, "cacheInfo.json");
     maxAliveTime = 21600000;
@@ -45,7 +48,12 @@ export class AnimeTopList {
     ready = false;
     isBeingUpdated = false;
 
-    constructor() {}
+    endpoint = {
+        base: "https://myanimelist.net",
+        top(filter?: string) {
+            return filter ? `${this.base}?type=${filter}` : this.base;
+        },
+    };
 
     async prepare() {
         await fs.ensureDir(this.dataDir);
@@ -56,21 +64,21 @@ export class AnimeTopList {
     async fetchAndUpdateDatabase() {
         if (!this.ready) throw new Error("Anime list is not ready yet");
 
-        try {
-            const cacheInfo = await getCacheInfo(this.cacheInfoPath);
-            if (cacheInfo) {
-                const expires = cacheInfo.lastUpdated + this.maxAliveTime;
-                if (expires > Date.now()) {
-                    const data = await fs.readFile(this.dbPath);
-                    TopAnimeCache = JSON.parse(data.toString());
-                    return Logger.info(
-                        `Skipping Anime list update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
-                            Functions.parseMs(expires - Date.now())
-                        )}`
-                    );
-                }
+        const [, cacheInfo] = await PromiseUtils.await(
+            getCacheInfo(this.cacheInfoPath)
+        );
+        if (cacheInfo) {
+            const expires = cacheInfo.lastUpdated + this.maxAliveTime;
+            if (expires > Date.now()) {
+                const data = await fs.readFile(this.dbPath);
+                TopAnimeCache = JSON.parse(data.toString());
+                return Logger.info(
+                    `Skipping Anime list update as it up-to-date! Remaining time: ${Duration.humanize(
+                        Duration.parseMs(expires - Date.now())
+                    )}`
+                );
             }
-        } catch (err) {}
+        }
 
         try {
             this.isBeingUpdated = true;
@@ -85,7 +93,7 @@ export class AnimeTopList {
 
                 // @ts-ignore
                 TopAnimeCache[type || "all"] = animes;
-                await Functions.sleep(5000);
+                await Duration.sleep(5000);
             }
 
             await fs.writeFile(
@@ -105,7 +113,7 @@ export class AnimeTopList {
 
     async TopAnimesFetcher(options: TopAnimesOptions) {
         const { data } = await axios.get<string>(
-            Constants.urls.animeList.top(options.type),
+            this.endpoint.top(options.type),
             {
                 responseType: "text",
             }

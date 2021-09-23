@@ -1,6 +1,6 @@
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Emojis } from "@/util";
+import { Emojis } from "@/utils/emojis";
 
 const fn: AppFile = (app) => {
     const command = new Command(

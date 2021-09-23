@@ -1,9 +1,8 @@
 import { AppFile } from "@/base/app";
-import { Logger } from "@/util";
+import { Logger } from "@/utils/logger";
 
 const fn: AppFile = (app) => {
     app.bot.on("ready", () => {
-        app.plugins.music.init(app.bot.user!.id);
         Logger.info(
             `Logged in as ${app.bot.user?.username}#${app.bot.user?.discriminator}!`
         );

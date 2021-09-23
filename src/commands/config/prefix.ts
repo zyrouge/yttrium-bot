@@ -1,7 +1,7 @@
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
 import { Database } from "@/base/database/Mongoose";
-import { Emojis } from "@/util";
+import { Emojis } from "@/utils/emojis";
 
 const fn: AppFile = (app) => {
     const command = new Command(

@@ -6,8 +6,16 @@ import { parser as StreamParser } from "stream-json/Parser";
 import { streamArray as StreamArray } from "stream-json/streamers/StreamArray";
 import { pick as StreamPick } from "stream-json/filters/Pick";
 import { BSQLDatabase } from "@/base/database/BSQLDatabase";
-import { Constants, Functions, Logger } from "@/util";
-import { getCacheInfo, updateCacheInfo } from "@/base/database/CacheInfoFile";
+import {
+    CacheInfo,
+    getCacheInfo,
+    updateCacheInfo,
+} from "@/base/database/CacheInfoFile";
+import { Duration } from "@/utils/duration";
+import { Http } from "@/utils/http";
+import { Logger } from "@/utils/logger";
+import { Paths } from "@/utils/paths";
+import { PromiseUtils } from "@/utils/promise";
 
 export interface AnimeEntity {
     sources: string[];
@@ -27,7 +35,7 @@ export interface AnimeEntity {
 }
 
 export class AnimeDatabase {
-    dbDir = path.join(Constants.paths.data, "animedb");
+    dbDir = path.join(Paths.data, "animedb");
     dbPath = path.join(this.dbDir, "data.db");
     cacheInfoPath = path.join(this.dbDir, "cacheInfo.json");
     maxAliveTime = 21600000;
@@ -39,7 +47,11 @@ export class AnimeDatabase {
     ready = false;
     isBeingUpdated = false;
 
-    constructor() {}
+    endpoint = {
+        base: "https://github.com/manami-project/anime-offline-database",
+        dataJson:
+            "https://raw.githubusercontent.com/manami-project/anime-offline-database/master/anime-offline-database.json",
+    };
 
     async prepare() {
         this.sql
@@ -82,35 +94,31 @@ export class AnimeDatabase {
         if (!this.ready) throw new Error("Anime Database is not ready yet");
 
         return new Promise<void>(async (resolve, reject) => {
-            try {
-                try {
-                    const cacheInfo = await getCacheInfo(this.cacheInfoPath);
-                    if (cacheInfo) {
-                        const expires =
-                            cacheInfo.lastUpdated + this.maxAliveTime;
-                        if (expires > Date.now()) {
-                            Logger.info(
-                                `Skipping Anime Database update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
-                                    Functions.parseMs(expires - Date.now())
-                                )}`
-                            );
-                            return resolve();
-                        }
-                    }
-                } catch (err) {}
+            const [, cacheInfo] = await PromiseUtils.await(
+                getCacheInfo(this.cacheInfoPath)
+            );
+            if (cacheInfo) {
+                const expires = cacheInfo.lastUpdated + this.maxAliveTime;
+                if (expires > Date.now()) {
+                    Logger.info(
+                        `Skipping Anime Database update as it up-to-date! Remaining time: ${Duration.humanize(
+                            Duration.parseMs(expires - Date.now())
+                        )}`
+                    );
+                    return resolve();
+                }
+            }
 
+            try {
                 this.isBeingUpdated = true;
                 Logger.info("Updating Anime Database...");
 
-                const res = await axios.get<Readable>(
-                    Constants.urls.animeOfflineDatabase.dataJson,
-                    {
-                        responseType: "stream",
-                        headers: {
-                            "User-Agent": Constants.http.UserAgent,
-                        },
-                    }
-                );
+                const res = await axios.get<Readable>(this.endpoint.dataJson, {
+                    responseType: "stream",
+                    headers: {
+                        "User-Agent": Http.UserAgent,
+                    },
+                });
 
                 const collector = res.data
                     .pipe(StreamParser())
@@ -174,7 +182,7 @@ export class AnimeDatabase {
                                     );
                             }
 
-                            await Functions.sleep(10);
+                            await Duration.sleep(10);
                             collector.resume();
                         } catch (err) {
                             that.isBeingUpdated = false;

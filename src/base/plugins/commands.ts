@@ -1,6 +1,9 @@
 import Discord from "discord.js";
 import commandLineArgs, { OptionDefinition } from "command-line-args";
-import { Colors, Emojis, Functions } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { StringUtils } from "@/utils/string";
+import { Duration } from "@/utils/duration";
+import { Colors } from "@/utils/colors";
 
 export const ArgsParser = (args: string[], options: OptionDefinition[]) =>
     commandLineArgs(options, {
@@ -58,7 +61,7 @@ export interface Command {
 export const getCommandHelpEmbed = (prefix: string, cmd: Command) => {
     const embed = new Discord.MessageEmbed();
     embed.setTitle(
-        `${Emojis.INFO} | Command: ${Functions.capitalize(cmd.name)}`
+        `${Emojis.INFO} | Command: ${StringUtils.capitalize(cmd.name)}`
     );
 
     const invokers = [cmd.name];
@@ -67,13 +70,11 @@ export const getCommandHelpEmbed = (prefix: string, cmd: Command) => {
     const desc = [
         `**Invokers**: ${invokers.map((x) => `\`${x}\``).join(", ")}`,
         `**Description**: ${cmd.description}`,
-        `**Category**: ${Functions.capitalize(cmd.category)}`,
+        `**Category**: ${StringUtils.capitalize(cmd.category)}`,
     ];
     if (cmd.cooldown) {
         desc.push(
-            `**Cooldown**: ${Functions.humanizeDuration(
-                Functions.parseMs(cmd.cooldown)
-            )}`
+            `**Cooldown**: ${Duration.humanize(Duration.parseMs(cmd.cooldown))}`
         );
     }
     embed.setDescription(desc.join("\n"));
@@ -143,9 +144,7 @@ export const getCommandHelpEmbed = (prefix: string, cmd: Command) => {
     return embed;
 };
 
-export type CommandRunMessageReturn = Parameters<
-    typeof Discord.TextChannel.prototype.send
->[1];
+export type CommandRunMessageReturn = Discord.MessageOptions;
 
 export type CommandRun = (options: {
     msg: Discord.Message;

@@ -53,8 +53,9 @@ export class Database {
     };
 
     static connect() {
-        if (!process.env.MONGOOSE_URL)
+        if (!process.env.MONGOOSE_URL) {
             throw new Error("Missing 'process.env.MONGOOSE_URL'");
+        }
 
         return mongoose.connect(process.env.MONGOOSE_URL, {
             useNewUrlParser: true,

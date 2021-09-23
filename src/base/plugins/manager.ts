@@ -4,8 +4,8 @@ import { AnimeDatabase } from "@/base/plugins/animedb/AnimeDatabase";
 import { AnimeTopList } from "@/base/plugins/animelist/Top";
 import { AnimeGirlsHoldingProgrammingBooks } from "@/base/plugins/animegirlbooks/AnimeGirlsHoldingProgrammingBooks";
 import { CronRunner } from "@/base/plugins/cron/Runner";
-import { createMusicManager } from "@/base/plugins/music";
-import { Constants } from "@/util";
+import { Cron } from "@/utils/cron";
+import { PromiseUtils } from "@/utils/promise";
 
 export interface PluginsManagerOptions {}
 
@@ -13,7 +13,6 @@ export class PluginsManager {
     app: App;
 
     commands: CommandManager;
-    music: ReturnType<typeof createMusicManager>;
     animedb: AnimeDatabase;
     animelist: AnimeTopList;
     animegirlsbooks: AnimeGirlsHoldingProgrammingBooks;
@@ -23,13 +22,6 @@ export class PluginsManager {
         this.app = app;
 
         this.commands = new CommandManager();
-        this.music = createMusicManager(this.app.bot, [
-            {
-                host: process.env.LAVALINK_HOST!,
-                port: +process.env.LAVALINK_PORT!,
-                password: process.env.LAVALINK_PASSWORD!,
-            },
-        ]);
         this.animedb = new AnimeDatabase();
         this.animelist = new AnimeTopList();
         this.animegirlsbooks = new AnimeGirlsHoldingProgrammingBooks();
@@ -51,28 +43,18 @@ export class PluginsManager {
                 this.animegirlsbooks
             );
 
-        this.cron.addJob(
-            "ANIME_DATABASE_UPDATE",
-            Constants.cron.every6hours,
-            animedb
-        );
+        this.cron.addJob("ANIME_DATABASE_UPDATE", Cron.every6hours, animedb);
 
-        this.cron.addJob(
-            "ANIME_LIST_UPDATE",
-            Constants.cron.every6hours,
-            animelist
-        );
+        this.cron.addJob("ANIME_LIST_UPDATE", Cron.every6hours, animelist);
 
         this.cron.addJob(
             "ANIME_GIRL_HOLDING_BOOKS_UPDATE",
-            Constants.cron.every12hours,
+            Cron.every12hours,
             animegirlsbooks
         );
 
         [animedb, animelist, animegirlsbooks].forEach((x) => {
-            try {
-                x();
-            } catch (err) {}
+            PromiseUtils.awaitFn(x);
         });
     }
 }

@@ -1,12 +1,12 @@
 import axios from "axios";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Emojis } from "@/util";
+import { Emojis } from "@/utils/emojis";
 
 const Activities: Record<
     string,
     {
-        id: `${bigint}`;
+        id: string;
         name: string;
     }
 > = {
@@ -68,7 +68,8 @@ const fn: AppFile = (app) => {
                         content: `${Emojis.DANGER} | You must be in a Voice Channel or mention a Voice Channel to start an activity!`,
                     };
                 }
-                if (voiceChannel.type !== "voice") {
+
+                if (voiceChannel.isVoice()) {
                     return {
                         content: `${Emojis.DANGER} | <#${voiceChannel.id}> is not an valid Voice Channel!`,
                     };

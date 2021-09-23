@@ -2,12 +2,17 @@ import path from "path";
 import fs from "fs-extra";
 import axios from "axios";
 import { getCacheInfo, updateCacheInfo } from "@/base/database/CacheInfoFile";
-import { Constants, Functions, Logger } from "@/util";
+import { Duration } from "@/utils/duration";
+import { Logger } from "@/utils/logger";
+import { Paths } from "@/utils/paths";
+import { RegExpUtils } from "@/utils/regex";
+import { ArrayUtils } from "@/utils/array";
+import { PromiseUtils } from "@/utils/promise";
 
 export let ImagesCache: string[] | undefined = undefined;
 
 export class AnimeGirlsHoldingProgrammingBooks {
-    dataDir = path.join(Constants.paths.data, "animegirlbooks", "top");
+    dataDir = path.join(Paths.data, "animegirlbooks", "top");
     dbPath = path.join(this.dataDir, "images.json");
     cacheInfoPath = path.join(this.dataDir, "cacheInfo.json");
     maxAliveTime = 86400000;
@@ -15,7 +20,13 @@ export class AnimeGirlsHoldingProgrammingBooks {
     ready = false;
     isBeingUpdated = false;
 
-    constructor() {}
+    endpoint = {
+        base: "https://github.com/laynH/Anime-Girls-Holding-Programming-Books",
+        contentsApi:
+            "https://api.github.com/repos/laynH/Anime-Girls-Holding-Programming-Books/git/trees/master?recursive=1",
+        rawBase:
+            "https://raw.githubusercontent.com/laynH/Anime-Girls-Holding-Programming-Books/master",
+    };
 
     async prepare() {
         await fs.ensureDir(this.dataDir);
@@ -27,21 +38,21 @@ export class AnimeGirlsHoldingProgrammingBooks {
         if (!this.ready)
             throw new Error("Anime girl holding books is not ready yet");
 
-        try {
-            const cacheInfo = await getCacheInfo(this.cacheInfoPath);
-            if (cacheInfo) {
-                const expires = cacheInfo.lastUpdated + this.maxAliveTime;
-                if (expires > Date.now()) {
-                    const data = await fs.readFile(this.dbPath);
-                    ImagesCache = JSON.parse(data.toString()) as string[];
-                    return Logger.info(
-                        `Skipping Anime girl holding books update as it up-to-date! Remaining time: ${Functions.humanizeDuration(
-                            Functions.parseMs(expires - Date.now())
-                        )}`
-                    );
-                }
+        const [, cacheInfo] = await PromiseUtils.await(
+            getCacheInfo(this.cacheInfoPath)
+        );
+        if (cacheInfo) {
+            const expires = cacheInfo.lastUpdated + this.maxAliveTime;
+            if (expires > Date.now()) {
+                const data = await fs.readFile(this.dbPath);
+                ImagesCache = JSON.parse(data.toString()) as string[];
+                return Logger.info(
+                    `Skipping Anime girl holding books update as it up-to-date! Remaining time: ${Duration.humanize(
+                        Duration.parseMs(expires - Date.now())
+                    )}`
+                );
             }
-        } catch (err) {}
+        }
 
         try {
             this.isBeingUpdated = true;
@@ -65,31 +76,21 @@ export class AnimeGirlsHoldingProgrammingBooks {
     }
 
     async fetchAllImages() {
-        try {
-            const { data } = await axios.get<any>(
-                Constants.urls.animeGirlsHoldingProgrammingBooks.contentsApi,
-                {
-                    responseType: "json",
-                }
-            );
+        const { data } = await axios.get<any>(this.endpoint.contentsApi, {
+            responseType: "json",
+        });
 
-            const images: string[] = data.tree
-                .map(
-                    (x: any) =>
-                        `${Constants.urls.animeGirlsHoldingProgrammingBooks.rawBase}/${x.path}`
-                )
-                .filter((x: string) => Constants.regex.jpgOrPng.test(x));
+        const images: string[] = data.tree
+            .map((x: any) => `${this.endpoint.rawBase}/${x.path}`)
+            .filter((x: string) => RegExpUtils.jpgOrPng.test(x));
 
-            return images;
-        } catch (err) {
-            throw err;
-        }
+        return images;
     }
 
     random() {
         if (!ImagesCache || !this.ready || this.isBeingUpdated)
             throw new Error("Anime girl holding books is not ready yet");
 
-        return Functions.random(ImagesCache);
+        return ArrayUtils.random(ImagesCache);
     }
 }

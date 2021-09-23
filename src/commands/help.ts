@@ -2,7 +2,9 @@ import path from "path";
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command, CommandCategories } from "@/base/plugins/commands";
-import { Colors, Emojis, Functions } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { Colors } from "@/utils/colors";
+import { StringUtils } from "@/utils/string";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -19,7 +21,7 @@ const fn: AppFile = (app) => {
                     defaultOption: true,
                     multiple: true,
                     helpDesc: "Command category",
-                    helpVal: (CommandCategories as any) as string[],
+                    helpVal: CommandCategories as any as string[],
                     optional: true,
                 },
             ],
@@ -55,7 +57,7 @@ const fn: AppFile = (app) => {
             ].filter((x) => x.category === cat);
 
             embed.setTitle(
-                `${Emojis.PAGE} | Category: ${Functions.capitalize(cat)}`
+                `${Emojis.PAGE} | Category: ${StringUtils.capitalize(cat)}`
             );
             embed.setDescription(
                 `Available commands: ${allCommands

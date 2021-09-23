@@ -1,7 +1,8 @@
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
 import { EightBall } from "@/base/plugins/eightball";
-import { Emojis, Functions } from "@/util";
+import { ArrayUtils } from "@/utils/array";
+import { Emojis } from "@/utils/emojis";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -37,7 +38,9 @@ const fn: AppFile = (app) => {
             }
 
             return {
-                content: `${Emojis.EIGHTBALL} | ${Functions.random(EightBall)}`,
+                content: `${Emojis.EIGHTBALL} | ${ArrayUtils.random(
+                    EightBall
+                )}`,
             };
         }
     );

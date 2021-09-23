@@ -2,7 +2,12 @@ import os from "os";
 import { MessageEmbed } from "discord.js";
 import { AppFile } from "@/base/app";
 import { Command } from "@/base/plugins/commands";
-import { Colors, Constants, Emojis, Functions } from "@/util";
+import { Emojis } from "@/utils/emojis";
+import { Colors } from "@/utils/colors";
+import { Duration } from "@/utils/duration";
+import { Project } from "@/utils/project";
+import { StringUtils } from "@/utils/string";
+import { Assets } from "@/utils/assets";
 
 const fn: AppFile = (app) => {
     const command = new Command(
@@ -18,14 +23,14 @@ const fn: AppFile = (app) => {
 
             embed.setTitle(`${Emojis.INFO} | Information`);
 
-            const sha = await Functions.getSHA();
+            const sha = await Project.getSHA();
             embed.addField(
                 `${Emojis.BOT} Bot`,
                 [
-                    `**Tag**: ${app.bot.user?.tag} (\`${Constants.project.codeName}\`)`,
+                    `**Tag**: ${app.bot.user?.tag} (\`${Project.codeName}\`)`,
                     `**ID**: ${app.bot.user?.id}`,
-                    `**Author**: ${Constants.project.author}`,
-                    `**Source Code**: [GitHub](${Constants.project.github})`,
+                    `**Author**: ${Project.author}`,
+                    `**Source Code**: [GitHub](${Project.github})`,
                     `**Commit**: ${sha ? `\`${sha}\`` : "Unknown"}`,
                 ].join("\n")
             );
@@ -33,10 +38,10 @@ const fn: AppFile = (app) => {
             embed.addField(
                 `${Emojis.SYSTEM} System`,
                 [
-                    `**Uptime**: ${Functions.humanizeDuration(
-                        Functions.parseMs(Date.now() - app.createdAt)
+                    `**Uptime**: ${Duration.humanize(
+                        Duration.parseMs(Date.now() - app.createdAt)
                     )}`,
-                    `**Platform**: ${Functions.capitalize(os.platform())}`,
+                    `**Platform**: ${StringUtils.capitalize(os.platform())}`,
                     `**CPU**: ${[
                         ...new Set(os.cpus().map((x) => x.model)),
                     ].join(", ")}`,
@@ -49,39 +54,11 @@ const fn: AppFile = (app) => {
                 ].join("\n")
             );
 
-            const lavalinkNode = app.plugins.music.nodes.first();
-            if (lavalinkNode) {
-                const stats = lavalinkNode.stats;
-                embed.addField(
-                    `${Emojis.MUSIC} Lavalink`,
-                    [
-                        `**Uptime**: ${Functions.humanizeDuration(
-                            Functions.parseMs(stats.uptime)
-                        )}`,
-                        `**CPU Cores**: ${stats.cpu.cores}`,
-                        `**Lavalink Load**: ${Math.floor(
-                            stats.cpu.lavalinkLoad * 100
-                        )}%`,
-                        `**System Load**: ${Math.floor(
-                            stats.cpu.systemLoad * 100
-                        )}%`,
-                        `**Memory**: ${(
-                            stats.memory.free /
-                            (1024 * 1024)
-                        ).toFixed(2)}gb left out of ${(
-                            stats.memory.allocated /
-                            (1024 * 1024)
-                        ).toFixed(2)}gb`,
-                        `**Total Players**: ${stats.players} (${stats.playingPlayers} playing)`,
-                    ].join("\n")
-                );
-            }
-
             embed.setColor(Colors.WHITE);
             embed.setTimestamp();
-            embed.setImage(Constants.urls.assets.animeBlush);
+            embed.setImage(Assets.animeBlush);
 
-            return { embed };
+            return { embeds: [embed] };
         }
     );
 
